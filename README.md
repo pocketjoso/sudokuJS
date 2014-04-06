@@ -36,6 +36,7 @@ I got interested in sudoku strategies and decided to see whether I could write a
 
 #### Solving
 Solve the puzzle either step by step, or all in one go:
+
 	mySudokuJS.solveStep();
 	mySudokuJS.solveAll();
 	
