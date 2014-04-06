@@ -43,8 +43,8 @@ Solve the puzzle either step by step, or all in one go:
 ### Callbacks
 	
 #### boardUpdatedFn
-Fires whenever the board is updated, whether by user or solver.
-Data.cause is either "user input", or name of strategy solver used.
+Fires whenever the board is updated, whether by user or solver. 
+Data.cause is either "user input", or name of strategy solver used. 
 Data.cellsUpdated [] contains the cellIndexes of updated cells.
 
 	 $("#sudoku").sudokuJS({
