@@ -1,0 +1,105 @@
+/* sudokuJS v0.2.1 - CSS
+// http://jonassebastianohlsson.com/sudoku
+// Author: Jonas Ohlsson
+// License: MIT
+*/
+
+.sudoku-board {
+	min-height: 21.6rem;
+	margin-bottom: 1em;
+}
+	/*cell (wrapper) contains both cell input and candidates div*/
+	.sudoku-board-cell {
+		display: inline-block;
+		position: relative;
+		border: 1px solid #ddd;
+		background: white;
+		max-width: 11.11111%;
+	}
+		/*rules for drawing the black lines dividing houses
+			-- specific for board size 9! need diff rules for diff board sizes
+		*/
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(9n+1){
+			border-left-color: black;
+		}
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(3n){
+			border-right-color: black;
+		}
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n):nth-of-type(-n+9){
+			border-top-color: black;
+		}
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+19):nth-of-type(-n+27),
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+46):nth-of-type(-n+54),
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+73):nth-of-type(-n+81){
+			border-bottom-color: black;
+		}
+		
+		/* the input for the value of each cell (i.e. 1-9 or empty for standard sudoku*/
+		.sudoku-board-cell input {
+			background: none;
+			font-size: 19.2px;
+			font-size: 1.2rem;
+			text-align: center;
+			width: 2em;
+			max-width: 100%;
+			height: 2em;
+			border: 0;
+			position: relative;
+			z-index: 1; /*on top of candidates*/
+		}
+		
+			/*highlight new input in board cell*/
+			.sudoku-board-cell.highlight-val {
+				color: #00d;
+			}
+			/*highligt incorrect input*/
+			.sudoku-board-cell.board-cell--error {
+				background: #d00;
+				color: #eee;
+			}
+		/*wrapper that hold the candidates for each cell*/
+		.sudoku-board-cell .candidates {
+			display: none; /*hidden by default*/
+			position: absolute;
+			top: 0; bottom: 0; left: 0; right: 0;
+			text-align: center;
+			font-size: .75em; /*1/3 /1.13 out of the 2*1.2em cell height*/
+			letter-spacing: -.5px;
+			font-family: monospace, sans-serif;
+			
+			/*use as justify grid*/
+			line-height: 0;
+			text-align: justify;
+		}
+			.sudoku-board .candidates:after {
+				content: "";
+				display: inline-block;
+				width: 100%;
+			}
+		/* when board cells start to get narrower because of small screen,
+			reduce letter spacing for candidates to make them still fit*/
+		@media(max-width: 23em){
+			.sudoku-board .candidates {
+				letter-spacing: -2px;
+			}
+		}
+			.showCandidates .candidates {
+				display: block;
+			}
+			
+			/*each candidate in each cell is wrapped in a div*/
+			.sudoku-board .candidates div {
+				display: inline-block;
+				width: 20%;
+				line-height: 1.13;
+				vertical-align: top;
+				*display: inline;
+				*zoom: 1;
+			}
+				/*.candidates div*/.candidate--highlight {
+					background-color: yellow;
+				}
+				/*.candidates div*/.candidate--to-remove {
+					background-color: red;
+					color: white;
+				}
