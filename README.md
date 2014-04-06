@@ -1,5 +1,5 @@
 #SudokuJS
-##JavaScript Sudoku soler
+##JavaScript Sudoku solver
 
 Live demo on: http://jonassebastianohlsson.com/sudoku/
 
@@ -10,12 +10,11 @@ I got interested in sudoku strategies and decided to see whether I could write a
 	<script src='sudokuJS.js'></script>
     <link rel='stylesheet' href='sudokuJS.css' />
 
-    <input id='sudoku' />
+    <div id='sudoku'></div>
 
     <script>
 	//array representing a standard sudoku puzzle of size 9
-	//use space for empty
-	//NOTE: if last cell is empty, use 'undefined' instead!
+	//use space for empty cells
 	var board = [
 		 , , ,4, ,8, ,2,9
 		, , , , , , , , ,4
@@ -25,10 +24,27 @@ I got interested in sudoku strategies and decided to see whether I could write a
 		, , ,3,2,6,1,7, , 
 		, , , , ,9,3,6,1,2
 		,2, , , , , ,4, ,3
-		,1,3, ,6,4,2, ,7,5
+		,1,3, ,6,4,2, ,7,undefined
 	]
-	
+	//NOTE: if last cell is empty, use 'undefined' instead!
+
     $("#sudoku").sudokuJS({
         board: board
     });
     </script>
+	
+### Callbacks
+	
+#### boardUpdatedFn
+Fires whenever the board is updated.
+
+	 $("#sudoku").sudokuJS({
+		board: board
+		,boardUpdatedFn: function(){
+			alert("solver updated the board!");
+		}
+	});
+ 
+
+### License
+MIT.
