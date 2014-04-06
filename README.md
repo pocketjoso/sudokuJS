@@ -3,7 +3,7 @@
 
 Live demo on: http://jonassebastianohlsson.com/sudoku/
 
-I got interested in sudoku strategies and decided to see whether I could write a solver in JavaScript. This solver currently implements basic strategies, enough to solve (non evil) newspaper sudoku puzzles.
+I got interested in sudoku strategies and decided to see whether I could write a solver in JavaScript. This solver currently implements basic strategies, enough to solve (non evil) newspaper sudoku puzzles. The solver is board size agnostic, so you can pass in any valid sudoku sized board (f.e. 4x4, 9x9, 16x16) - however the CSS included only handles 9x9 boards.
 
 ### Basic Usage
 
@@ -40,20 +40,76 @@ Solve the puzzle either step by step, or all in one go:
 	mySudokuJS.solveStep();
 	mySudokuJS.solveAll();
 	
+#### Analyzing the board
+The solver can tell you info about the board before it has been solved.
+
+	var data = mySudokuJS.analyzeBoard();
+	
+	//data.error -- board is incorrect
+	//data.finished === false -- board can't be solvedrequires more advanced strategies 
+	
+	//if no error, and data.finished === true
+	//data.level -- "easy"|"medium"|"hard"
+	//data.score -- int [experimental]
+	//data.usedStrategies -- [{title, freq}, ..]
+
+#### Candidates
+Candidates are hidden when a board loads. To show/hide candidates:
+	
+	mySudokuJS.showCandidates();
+	mySudokuJS.hideCandidates();
+
+	
 ### Callbacks
 	
 #### boardUpdatedFn
 Fires whenever the board is updated, whether by user or solver. 
- * Data.cause is either "user input", or name of strategy solver used. 
- * Data.cellsUpdated [] contains the cellIndexes of updated cells.
 
 	 $("#sudoku").sudokuJS({
 		board: board
 		,boardUpdatedFn: function(data){
+			//data.cause: "user input" | name of strategy used
+			//data.cellsUpdated: [] of indexes for cells updated
 			alert("board was updated!");
 		}
 	});
+
+#### boardFinishedFn
+Fires when the board has been completed.
+
+	 $("#sudoku").sudokuJS({
+		board: board
+		,boardFinishedFn: function(data){
+			//ONLY IF board was solved by solver:
+			//data.difficultyInfo {
+			//	level: "easy", "medium", "hard"
+			//	,score: int [experimental]
+			//}
+			alert("board was finished!");
+		}
+	});
  
+
+#### boardErrorFn
+Fires whenever the board is found to be incorrect, f.e. if solver detects there is no solution to board, or if passed in board is of invalid size.
+
+	 $("#sudoku").sudokuJS({
+		board: board
+		,boardErrorFn: function(data){
+			alert("board error!");
+		}
+	});
+ 
+#### candidateShowToggleFn
+ The solver automatically switches to showing candidates when a solve step was invoked which only updated the candidates on the board. To catch this change (for updating UI, etc), there is a callback:
+
+	 $("#sudoku").sudokuJS({
+		board: board
+		,candidateShowToggleFn: function(showingBoolean){
+			alert("candidates showing: " + showingBoolean); //true|false
+		}
+	}
+	
 
 ### License
 MIT
