@@ -9,7 +9,7 @@ SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on 
 
 SudokuJS currently requires jQuery.
 
-### Basic Usage
+### Usage
 
 #### Initialization
 	<script src='sudokuJS.js'></script>
@@ -39,7 +39,7 @@ SudokuJS currently requires jQuery.
     </script>
 
 #### Solving
-Solve the puzzle either step by step, or all in one go:
+Let SudokuJS solve your puzzle - either step by step, or all in one go:
 
 	mySudokuJS.solveStep();
 	mySudokuJS.solveAll();
@@ -50,7 +50,7 @@ The solver can tell you info about the board.
 	var data = mySudokuJS.analyzeBoard();
 	
 	//data.error -- board is incorrect
-	//data.finished === false -- board can't be solvedrequires more advanced strategies 
+	//data.finished === false -- board can't be solved because it requires more advanced strategies 
 	
 	//if no error, and data.finished === true
 	//data.level -- "easy"|"medium"|"hard"
@@ -63,12 +63,25 @@ Candidates are hidden when a board loads. To show/hide candidates:
 	mySudokuJS.showCandidates();
 	mySudokuJS.hideCandidates();
 	
-SudokuJS automatically removes impossible candidates on showCandidates(); candidates that can be eliminated via visualElimination (digit already exists in same house).
+SudokuJS automatically removes impossible candidates on showCandidates(); candidates that can be eliminated via visualElimination (number already exists in same house).
 
 #### Clear board
 Useful before entering new puzzle, if using keyboard input in the GUI.
 
 	mySudokuJS.clearBoard();
+	
+#### Get/Set board
+Get the board and save it away if you want. Set a new board and play with that one instead. Setting automatically resets everything back to init state.
+
+	mySudokuJS.getBoard();
+	
+	var newBoard = [
+		...
+	]
+	
+	mySudokuJS.setBoard(newBoard);
+	
+	
 	
 ### Callbacks
 	
