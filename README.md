@@ -45,7 +45,7 @@ Solve the puzzle either step by step, or all in one go:
 	mySudokuJS.solveAll();
 	
 #### Analyzing the board
-The solver can tell you info about the board before it has been solved.
+The solver can tell you info about the board.
 
 	var data = mySudokuJS.analyzeBoard();
 	
