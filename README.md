@@ -35,9 +35,8 @@ I got interested in sudoku strategies and decided to see whether I could write a
     </script>
 
 #### Solving
-	//solves on the board one step at a time.
+Solve the puzzle either step by step, or all in one go:
 	mySudokuJS.solveStep();
-	//solves the whole board at once
 	mySudokuJS.solveAll();
 	
 ### Callbacks
@@ -56,4 +55,4 @@ Data.cellsUpdated [] contains the cellIndexes of updated cells.
  
 
 ### License
-MIT.
+MIT
