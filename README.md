@@ -1,0 +1,4 @@
+sudokuJS
+========
+
+JavaScript Sudoku solver
