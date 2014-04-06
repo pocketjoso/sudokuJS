@@ -3,7 +3,7 @@
 
 Live demo on: http://jonassebastianohlsson.com/sudoku/
 
-I got interested in sudoku strategies and decided to see whether I could write a solver in JavaScript. This solver currently implements basic strategies, enough to solve (non evil) newspaper sudoku puzzles.
+I got interested in sudoku strategies and decided to write a solver in JavaScript. This solver currently implements basic strategies, enough to solve (non evil) newspaper sudoku puzzles.
 
 SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on the screen, and the board cells listen for keyboard input from a user.
 
