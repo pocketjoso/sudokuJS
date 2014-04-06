@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel="stylesheet" media="all" type="text/css" href="../sudokuJS-0.2.1.css">
+		<style>
+			* { 
+				margin:0; padding:0;
+				-moz-box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+			.wrap {
+				padding: 2em 1em;
+				width: 400px;
+				max-width: 100%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+			@media(min-width: 30em){
+				.wrap{
+					width: 490px;
+				}
+				.sudoku-board input {
+					font-size: 24px;
+					font-size: 1.5rem;
+				}
+				.sudoku-board .candidates {
+					font-size: .8em;
+				}
+			}
+			
+		</style>
+		
+		<title>SudokuJS - demo with controls</title>
+
+		
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+		<script type="text/javascript" src="../sudokuJS-0.2.1.js"></script>
+	</head>
+	
+	<body>
+	<div class="wrap">
+		<h1>SudokuJS demo with controls</h1>
+		
+		<!--show candidates toggle-->
+		<label for="toggleCandidates">Show candidates </label><input id="toggleCandidates" class="js-candidate-toggle" type="checkbox"/>
+		<!--analyze board btn-->
+		<button type="button" class="js-analyze-board-btn">Analyze</button>
+		
+		<!--the only required html-->
+		<div id="sudoku" class="sudoku-board">
+		</div>
+		
+		<!--solve buttons-->
+		Solve: <button type="button" class="js-solve-step-btn">One Step</button><button type="button" class="js-solve-all-btn">All</button>
+		<br>
+		<!--clear board btn-->
+		Clear: <button type="button" class="js-clear-board-btn">Board</button>
+	</div>
+
+	<script>
+		var board = [
+			 , , ,4, ,8, ,2,9
+			, , , , , , , , ,4
+			,8,5, , ,2, , , ,7
+			, , ,8,3,7,4,2, , 
+			, ,2, , , , , , , 
+			, , ,3,2,6,1,7, , 
+			, , , , ,9,3,6,1,2
+			,2, , , , , ,4, ,3
+			,1,3, ,6,4,2, ,7,undefined
+		],
+			//NOTE: if last cell of board is empty 'undefined' has to be used as value!
+		
+			$candidateToggle = $(".js-candidate-toggle"),
+			$analyzeBoardBtn = $(".js-analyze-board-btn"),
+
+			$solveStepBtn = $(".js-solve-step-btn"),
+			$solveAllBtn = $(".js-solve-all-btn"),
+			$clearBoardBtn = $(".js-clear-board-btn"),
+		
+			mySudokuJS = $("#sudoku").sudokuJS({
+				board: board
+				//change state of our candidate showing checkbox on change in sudokuJS
+				,candidateShowToggleFn : function(showing){
+					$candidateToggle.prop("checked", showing);
+				}
+			});
+		
+		$solveStepBtn.on("click", mySudokuJS.solveStep);	
+		$solveAllBtn.on("click", mySudokuJS.solveAll);
+		$clearBoardBtn.on("click", mySudokuJS.clearBoard);
+		
+		$analyzeBoardBtn.on("click", function(){
+			var data = mySudokuJS.analyzeBoard();
+			
+			var msg = "";
+			if(data.error){
+				msg = "This board can not be solved because it is incorrect.";
+			}
+			else if (data.finished === false) {
+				msg = "Woah! \n"
+					+"Tough board you got there!\n"
+					+"\nThis board requires very advanced strategies to solve, more advanced than the ones this solver uses. Or possibly, it can't even be solved.\n"
+					+"\nRank: Evil";
+			} else {
+				msg = "Rank: "+data.level +"\n";
+				msg += "\nThis board requires use of the following strategies: \n\n";
+				for (var i=0; i < data.usedStrategies.length; i++){
+					msg += "\t-"+data.usedStrategies[i].title+"\n";
+				}
+			}		
+			window.alert(msg);
+		});
+		
+		$candidateToggle.on("change", function(){
+			if($candidateToggle.is(":checked"))
+				mySudokuJS.showCandidates();
+			else
+				mySudokuJS.hideCandidates();
+		});
+		$candidateToggle.trigger("change");
+	</script>
+	</body>
+</html>

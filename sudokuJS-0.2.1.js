@@ -1,5 +1,5 @@
 // sudokuJS v0.2.1
-// http://jonassebastianohlsson.com/sudoku
+// https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
 

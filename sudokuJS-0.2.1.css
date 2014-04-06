@@ -1,5 +1,5 @@
 /* sudokuJS v0.2.1 - CSS
-// http://jonassebastianohlsson.com/sudoku
+// https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
 */
@@ -49,11 +49,11 @@
 		}
 		
 			/*highlight new input in board cell*/
-			.sudoku-board-cell.highlight-val {
+			.sudoku-board-cell .highlight-val {
 				color: #00d;
 			}
 			/*highligt incorrect input*/
-			.sudoku-board-cell.board-cell--error {
+			.sudoku-board-cell .board-cell--error {
 				background: #d00;
 				color: #eee;
 			}

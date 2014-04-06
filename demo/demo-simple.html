@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel="stylesheet" media="all" type="text/css" href="../sudokuJS-0.2.1.css">
+		<style>
+			* { 
+				margin:0; padding:0;
+				-moz-box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+			.wrap {
+				padding: 2em 1em;
+				width: 400px;
+				max-width: 100%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			
+			@media(min-width: 30em){
+				.wrap{
+					width: 490px;
+				}
+				.sudoku-board input {
+					font-size: 24px;
+					font-size: 1.5rem;
+				}
+				.sudoku-board .candidates {
+					font-size: .8em;
+				}
+			}
+			
+		</style>
+
+		<title>SudokuJS - simple demo</title>
+		
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+		<script type="text/javascript" src="../sudokuJS-0.2.1.js"></script>
+	</head>
+	
+	<body>
+	<div class="wrap">
+		<h1>SudokuJS simple demo</h1>		
+		<!--the only required html-->
+		<div id="sudoku" class="sudoku-board">
+		</div>
+		
+		<!--solve buttons-->
+		Solve: <button type="button" class="js-solve-step-btn">One Step</button>
+		<button type="button" class="js-solve-all-btn">All</button>
+	</div>
+
+	<script>
+		var board = [
+			 ,5, , , ,2,3,8, 
+			, ,1, , , ,4, , ,5
+			, ,2, , ,5, , , , 
+			,5, ,7,8, , ,2,1, 
+			,4,6, ,2,3,7, ,5,8
+			, ,9,8, , ,5,4, ,7
+			, , , , ,6, , ,4, 
+			,1, , ,9, , , ,6, 
+			, ,7,3,4, , , ,9,undefined
+		]
+		//NOTE: if last cell of board is empty 'undefined' has to be used as value!
+
+		var mySudokuJS = $("#sudoku").sudokuJS({
+			board: board
+		});
+		
+		$(".js-solve-step-btn").on("click", mySudokuJS.solveStep);	
+		$(".js-solve-all-btn").on("click", mySudokuJS.solveAll);
+	</script>
+	</body>
+</html>

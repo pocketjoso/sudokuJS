@@ -7,6 +7,8 @@ I got interested in sudoku strategies and decided to see whether I could write a
 
 SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on the screen, and the board cells listen for keyboard input from a user.
 
+SudokuJS currently requires jQuery.
+
 ### Basic Usage
 
 #### Initialization
@@ -29,7 +31,7 @@ SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on 
 		,2, , , , , ,4, ,3
 		,1,3, ,6,4,2, ,7,undefined
 	]
-	//NOTE: if last cell is empty, use 'undefined' instead!
+	//NOTE: if last cell of board is empty 'undefined' has to be used as value!
 
     var mySudokuJS = $("#sudoku").sudokuJS({
         board: board
@@ -60,7 +62,13 @@ Candidates are hidden when a board loads. To show/hide candidates:
 	
 	mySudokuJS.showCandidates();
 	mySudokuJS.hideCandidates();
+	
+SudokuJS automatically removes impossible candidates on showCandidates(); candidates that can be eliminated via visualElimination (digit already exists in same house).
 
+#### Clear board
+Useful before entering new puzzle, if using keyboard input in the GUI.
+
+	mySudokuJS.clearBoard();
 	
 ### Callbacks
 	
