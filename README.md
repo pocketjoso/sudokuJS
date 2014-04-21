@@ -31,7 +31,7 @@ SudokuJS currently requires jQuery.
 		,2, , , , , ,4, ,3
 		,1,3, ,6,4,2, ,7,undefined
 	]
-	//NOTE: if last cell of board is empty 'undefined' has to be used as value!
+	//NOTE: if last cell of board is empty, 'undefined' has to be used as value!
 
     var mySudokuJS = $("#sudoku").sudokuJS({
         board: board
@@ -55,7 +55,7 @@ The solver can tell you info about the board.
 	//if no error, and data.finished === true
 	//data.level -- "easy"|"medium"|"hard"
 	//data.score -- int [experimental]
-	//data.usedStrategies -- [{title, freq}, ..]
+	//data.usedStrategies -- [{title, freq}, ..],ranked by difficulty, easiest first
 
 #### Candidates
 Candidates are hidden when a board loads. To show/hide candidates:
@@ -136,7 +136,7 @@ Fires whenever the board is found to be incorrect, f.e. if solver detects there 
 	
 
 ### Extra
-The solver is board size agnostic, so you can pass in any valid sudoku sized board (f.e. 4x4, 9x9, 16x16) - however the CSS included only handles 9x9 boards.
+The solver is board size agnostic, so you can pass in any valid sudoku sized board (f.e. 4x4, 9x9, 16x16) - however the CSS included only handles 9x9 boards. Currently you can't change boardSize after init.
 
 ### License
 MIT
