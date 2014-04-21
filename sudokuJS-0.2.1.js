@@ -171,16 +171,16 @@
 				
 				//calculate where relevant box starts, i.e. index of top left cell
 				
-				//first calculate the index for the the first cell of the vertical row that the box is on
+				//first calculate on what vertical row this first cell is, what index
 				// 0 0 0, 27 27 27, 54 54 54 (for standard sudoku)
-				var a = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
+				var boxStartVertRowIndex = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
 				
-				//then calculate where on horisontal row this box starts (0,3 or 6 for standard sudoku)
-				var boxHrow = (i%boxSideSize) * boxSideSize;
+				//then calculate where on horisontal row this cell is (0,3 or 6 for standard sudoku)
+				var boxStartHorisontalIndex = (i%boxSideSize) * boxSideSize;
 				
 				//combined, this gives us this box's start index
 				//0 3 6 27 30 33 54 57 60, for standard sudoku
-				var boxStartIndex = a + boxHrow; 
+				var boxStartIndex = boxStartVertRowIndex + boxStartHorisontalIndex; 
 						
 						
 				for(var j=0; j < boardSize; j++){
