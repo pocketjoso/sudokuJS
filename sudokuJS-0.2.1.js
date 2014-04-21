@@ -6,6 +6,7 @@
 (function (window, $, undefined) {
 	'use strict';
 	/*TODO:				
+		--explore - don't we have to rescan for single candidates after onlyUpdatedCandidates?
 		--possible additions--
 		toggle edit candidates
 		generate boards to play with
@@ -89,8 +90,8 @@
 		 /*
 		 * methods
 		 *-----------*/
-		 //shortcut for logging..
-		function log(msg){window.console&&console.log&&console.log(msg)};
+		 //shortcut for logging.
+		var log = function(msg){window.console&&console.log&&console.log(msg)};
 		
 		
 		//array contains function
@@ -138,7 +139,6 @@
 				totalScore += freq * stratObj.score;
 			}
 			boardDiff.score = totalScore;
-			//log("totalScore: "+totalScore);	
 			
 			return boardDiff;
 		}
@@ -156,32 +156,43 @@
 		
 		
 		/* generateHouseIndexList 
+		 * -----------------------
+		 * caches indexes for cells belonging to each house, for each house type (horisontal rows, vertical rows, boxes)
+		 * generated on the fly because boardSize is dynamic.
 		 * -----------------------------------------------------------------*/
 		var generateHouseIndexList = function(){
+			//used to calculate indexes of cells in each box - the side size of which is square root of boardSize
 			var boxSideSize = Math.sqrt(boardSize);
 			
 			for(var i=0; i < boardSize; i++){
 				var hrow = []; //horisontal row
 				var vrow = []; //vertical row
 				var box = [];
+				
+				//calculate where relevant box starts, i.e. index of top left cell
+				
+				//first calculate the index for the the first cell of the vertical row that the box is on
+				// 0 0 0, 27 27 27, 54 54 54 (for standard sudoku)
+				var a = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
+				
+				//then calculate where on horisontal row this box starts (0,3 or 6 for standard sudoku)
+				var boxHrow = (i%boxSideSize) * boxSideSize;
+				
+				//combined, this gives us this box's start index
+				//0 3 6 27 30 33 54 57 60, for standard sudoku
+				var boxStartIndex = a + boxHrow; 
+						
+						
 				for(var j=0; j < boardSize; j++){
+					//0,1,2...9 for first horisontal row in standard sudoku
 					hrow.push(boardSize*i + j);
+					//0,9,18...72 for first vertical row in standard sudoku
 					vrow.push(boardSize*j + i);
-					
+
+					//a box has dimensions boxSideSize by boxSideSize (standard sudoku: 3x3)
 					if(j < boxSideSize){
+						//..so we need two loops
 						for(var k=0; k < boxSideSize; k++){
-							//0, 0,0, 27, 27,27, 54, 54, 54 for a standard sudoku
-							var a = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
-							//[0-2] for a standard sudoku
-							var b = (i%boxSideSize) * boxSideSize;
-							var boxStartIndex = a +b; //0 3 6 27 30 33 54 57 60 
-							
-								//every boxSideSize box, skip boardSize num rows to next box (on new horizontal row)
-								//Math.floor(i/boxSideSize)*boardSize*2
-								//skip across horizontally to next box 
-								//+ i*boxSideSize;
-								
-								
 							box.push(boxStartIndex + boardSize*j + k);
 						}
 					}
@@ -222,7 +233,7 @@
 					board[j] = {
 						val: cellVal
 						,candidates: candidates
-						//,title: "" possibl add in 'A1. B1...etc
+						//,title: "" possibly add in 'A1. B1...etc
 					}
 				}
 			}
@@ -282,21 +293,6 @@
 			return s;
 		}
 		
-		
-		/* updateUI 
-		 * --------------
-		 *  updates the UI
-		 * -----------------------------------------------------------------
-		var updateUI = function(opts){
-			var opts = opts || {};
-			var paintNew = (typeof opts.paintNew !== "undefined") ? opts.paintNew : true;
-			updateUIBoard(paintNew);
-		}*/
-		 
-		/* updateUIBoard - 
-		 * --------------
-		 *  updates the board with our latest values
-		 * -----------------------------------------------------------------*/
 		 var updateUIBoard = function(paintNew){
 			//log("re painting every input on board..");
 			$boardInputs
@@ -322,17 +318,13 @@
 		 * -----------------------------------------------------------------*/
 		 var updateUIBoardCell = function(cellIndex, opts){
 			var opts = opts || {};
-			//log("updateUIBoardCell: "+cellIndex);
-			//if(!(opts.mode && opts.mode === "only-candidates")){
-				var newVal = board[cellIndex].val;
+
+			var newVal = board[cellIndex].val;
+		
+			$("#input-"+cellIndex)
+				.val(newVal)
+				.addClass("highlight-val");
 				
-				//$boardInputs.removeClass("highlight-val");
-				
-				//shouldn't always add hightlight-val class
-				$("#input-"+cellIndex)
-					.val(newVal)
-					.addClass("highlight-val");
-			//}
 			$("#input-"+cellIndex+"-candidates")
 				.html(buildCandidatesString(board[cellIndex].candidates));
 		}
@@ -357,8 +349,6 @@
 		/* removeCandidatesFromCell
 		-----------------------------------------------------------------*/
 		var removeCandidatesFromCell = function(cell, candidates){
-			//log(board[0].candidates);
-			//log(board[1].candidates);
 			var boardCell = board[cell];
 			var c = boardCell.candidates;
 			var cellUpdated = false;
@@ -737,7 +727,7 @@
 		 * -----------------------------------------------------------------*/
 		function singleCandidate(){
 			//before we start with candidate strategies, we need to update candidates from last round:
-			visualEliminationOfCandidates(); //TODO: a bit hackyy, should probably not be here
+			visualEliminationOfCandidates(); //TODO: wrong place.. call from solveFn?
 			
 			//for each cell
 			
@@ -1065,7 +1055,8 @@
 		
 		
 		
-		/* hiddenLockedCandidates
+		/* 
+		
 		 * --------------
 		 * looks for n nr of cells in house, which together has exactly n unique candidates.
 			this means these candidates will go into these cells, and can be removed elsewhere in house.
@@ -1084,10 +1075,7 @@
 					if(numbersLeft(house).length <= n) //can't eliminate any candidates
 						continue;
 					var combineInfo = []; //{candate: x, cellsWithCandidate: []}, {} ..
-					//combinedCandidates,cellsWithCandidate;
 					var minIndexes = [-1];
-					//log("--------------");
-					//log("house: ["+i+"]["+j+"]");
 					
 					//checks every combo of n candidates in house, returns pattern, or false
 					var result = checkLockedCandidates(house, 0);
@@ -1101,16 +1089,12 @@
 				//log("startIndex: "+startIndex);
 				for(var i=Math.max(startIndex, minIndexes[startIndex]); i <= boardSize-n+startIndex; i++){
 						
-					//log(i);
 					//never check this cell again, in this loop
 					minIndexes[startIndex] = i+1;
 					//or in a this loop deeper down in recursions
 					minIndexes[startIndex+1] = i+1;
 					
 					var candidate = i+1;
-					//log(candidate);
-					
-						
 					var possibleCells = cellsForCandidate(candidate,house);
 					
 					if(possibleCells.length === 0 || possibleCells.length > n)
@@ -1129,7 +1113,6 @@
 							}
 						}
 						if(temp.length > n){
-							//log("combined candidates spread over > n cells");
 							continue; //combined candidates spread over > n cells, won't work
 						}
 						
@@ -1482,7 +1465,7 @@
 			var boardClone = JSON.parse(JSON.stringify(board));
 			var canContinue = true;
 			while(canContinue) {
-				var startStrat = onlyUpdatedCandidates ? 2 : 0;
+				var startStrat = onlyUpdatedCandidates ? 1 : 0; //was 2 : 0
 				canContinue = solveFn(startStrat);
 			}
 			
@@ -1556,14 +1539,14 @@
 			solveMode = "all";
 			var canContinue = true;
 			while(canContinue) {
-				var startStrat = onlyUpdatedCandidates ? 2 : 0;
+				var startStrat = onlyUpdatedCandidates ? 1 : 0; // was 2 : 0
 				canContinue = solveFn(startStrat);
 			};
 		}
 		
 		var solveStep = function(){
 			solveMode = "step";
-			var startStrat = onlyUpdatedCandidates ? 2 : 0;
+			var startStrat = onlyUpdatedCandidates ? 1 : 0; // was 2 : 0
 			solveFn(startStrat);
 		}
 		
