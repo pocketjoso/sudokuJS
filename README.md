@@ -3,11 +3,19 @@
 
 Live demo on: http://jonassebastianohlsson.com/sudoku/
 
-I got interested in sudoku strategies and decided to write a solver in JavaScript. This solver currently implements basic strategies, enough to solve (non evil) newspaper sudoku puzzles.
+SudokuJS has a step by step solver that implements basic strategies,
+enough to solve (non evil) newspaper sudoku puzzles. The solver is built
+to mimic humans in that it attempts strategies in order from easiest to most
+difficult, in each step. So if you're stuck with a puzzle this solver will show
+you the minimal next step to continue.
 
-SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on the screen, and the board cells listen for keyboard input from a user.
+SudokuJS comes with a basic GUI for the sudoku board - the board is rendered on the screen,
+and the board cells listen for keyboard input from a user.
 
-SudokuJS currently requires jQuery.
+SudokuJS can generate sudoku puzzles of the same difficulties that it can solve,
+ranging from Easy to Very hard.
+
+SudokuJS currently requires jQuery (on TODO to remove this dependency).
 
 ### Usage
 
