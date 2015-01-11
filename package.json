@@ -1,0 +1,23 @@
+{
+  "name": "SudokuJS",
+  "private": "true",
+  "description": "JavaScript step-by-step Sudoku solver and board generator",
+  "version": "0.2.1",
+  "homepage": "https://github.com/pocketjoso/sudokuJS",
+  "author": {
+    "name": "Jonas Ohlsson",
+    "email": "jonas.sebastian.ohlsson@gmail.com",
+    "url": "http://jonassebastianohlsson.com"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha test"
+  },
+  "keywords": [
+    "Sudoku",
+    "Sudoku solver",
+    "Sudoku generator",
+    "Sudoku puzzles",
+    "Sudoku difficulty",
+    "game"
+  ]
+}
