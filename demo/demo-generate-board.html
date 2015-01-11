@@ -33,7 +33,7 @@
 
 		</style>
 
-		<title>SudokuJS - demo with controls</title>
+		<title>SudokuJS - demo with board generation</title>
 
 
 		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
@@ -42,12 +42,17 @@
 
 	<body>
 	<div class="wrap">
-		<h1>SudokuJS demo with controls</h1>
+		<h1>SudokuJS demo with board generation</h1>
 
 		<!--show candidates toggle-->
 		<label for="toggleCandidates">Show candidates </label><input id="toggleCandidates" class="js-candidate-toggle" type="checkbox"/>
-		<!--analyze board btn-->
-		<button type="button" class="js-analyze-board-btn">Analyze</button>
+		<!--genrate board btns-->
+		New:
+		<button type="button" class="js-generate-board-btn--easy">Easy</button>
+		<button type="button" class="js-generate-board-btn--medium">Medium</button>
+		<button type="button" class="js-generate-board-btn--hard">Hard</button>
+		<button type="button" class="js-generate-board-btn--very-hard">Very Hard</button>
+
 
 		<!--the only required html-->
 		<div id="sudoku" class="sudoku-board">
@@ -75,7 +80,10 @@
 			//NOTE: if last cell of board is empty 'undefined' has to be used as value!
 
 			$candidateToggle = $(".js-candidate-toggle"),
-			$analyzeBoardBtn = $(".js-analyze-board-btn"),
+			$generateBoardBtnEasy = $(".js-generate-board-btn--easy"),
+			$generateBoardBtnMedium = $(".js-generate-board-btn--medium"),
+			$generateBoardBtnHard = $(".js-generate-board-btn--hard"),
+			$generateBoardBtnVeryHard = $(".js-generate-board-btn--very-hard"),
 
 			$solveStepBtn = $(".js-solve-step-btn"),
 			$solveAllBtn = $(".js-solve-all-btn"),
@@ -93,26 +101,17 @@
 		$solveAllBtn.on("click", mySudokuJS.solveAll);
 		$clearBoardBtn.on("click", mySudokuJS.clearBoard);
 
-		$analyzeBoardBtn.on("click", function(){
-			var data = mySudokuJS.analyzeBoard();
-
-			var msg = "";
-			if(data.error){
-				msg = "This board can not be solved because it is incorrect.";
-			}
-			else if (data.finished === false) {
-				msg = "Woah! \n"
-					+"Tough board you got there!\n"
-					+"\nThis board requires very advanced strategies to solve, more advanced than the ones this solver uses. Or possibly, it can't even be solved.\n"
-					+"\nRank: Evil";
-			} else {
-				msg = "Rank: "+data.level +"\n";
-				msg += "\nThis board requires use of the following strategies: \n\n";
-				for (var i=0; i < data.usedStrategies.length; i++){
-					msg += "\t-"+data.usedStrategies[i].title+"\n";
-				}
-			}
-			window.alert(msg);
+		$generateBoardBtnEasy.on("click", function(){
+			mySudokuJS.generateBoard("easy");
+		});
+		$generateBoardBtnMedium.on("click", function(){
+			mySudokuJS.generateBoard("medium");
+		});
+		$generateBoardBtnHard.on("click", function(){
+			mySudokuJS.generateBoard("hard");
+		});
+		$generateBoardBtnVeryHard.on("click", function(){
+			mySudokuJS.generateBoard("very hard");
 		});
 
 		$candidateToggle.on("change", function(){

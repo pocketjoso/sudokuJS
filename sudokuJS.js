@@ -1,4 +1,4 @@
-// sudokuJS v0.2.1
+// sudokuJS v0.3.0
 // https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
@@ -6,11 +6,9 @@
 (function (window, $, undefined) {
 	'use strict';
 	/*TODO:
-		--explore - don't we have to rescan for single candidates after onlyUpdatedCandidates?
 		--possible additions--
 		toggle edit candidates
-		generate boards to play with
-
+		undo/redo
 	*/
 
 	/**
@@ -22,11 +20,15 @@
 		 * variables
 		 *-----------*/
 		var	solveMode = "step",
-			candidatesShowing = false,
-			boardFinished = false,
-			boardError = false,
-			onlyUpdatedCandidates = false,
-			gradingMode = false, //solving without updating UI
+				difficulty = "unknown",
+				candidatesShowing = false,
+				boardFinished = false,
+				boardError = false,
+				onlyUpdatedCandidates = false,
+				gradingMode = false, //solving without updating UI
+				generatingMode = false, //silence board unsolvable errors
+				invalidCandidates = [], //used by the generateBoard function
+
 
 		/*
 		the score reflects how much increased difficulty the board gets by having the pattern rather than an already solved cell
@@ -90,8 +92,8 @@
 		 /*
 		 * methods
 		 *-----------*/
-		 //shortcut for logging.
-		var log = function(msg){window.console&&console.log&&console.log(msg)};
+		 //shortcut for logging..
+		function log(msg){window.console&&console.log&&console.log(msg)};
 
 
 		//array contains function
@@ -139,6 +141,11 @@
 				totalScore += freq * stratObj.score;
 			}
 			boardDiff.score = totalScore;
+			//log("totalScore: "+totalScore);
+
+			if(totalScore > 750)
+			// if(totalScore > 2200)
+				boardDiff.level = "very hard";
 
 			return boardDiff;
 		}
@@ -156,43 +163,32 @@
 
 
 		/* generateHouseIndexList
-		 * -----------------------
-		 * caches indexes for cells belonging to each house, for each house type (horisontal rows, vertical rows, boxes)
-		 * generated on the fly because boardSize is dynamic.
 		 * -----------------------------------------------------------------*/
 		var generateHouseIndexList = function(){
-			//used to calculate indexes of cells in each box - the side size of which is square root of boardSize
 			var boxSideSize = Math.sqrt(boardSize);
 
 			for(var i=0; i < boardSize; i++){
 				var hrow = []; //horisontal row
 				var vrow = []; //vertical row
 				var box = [];
-
-				//calculate where relevant box starts, i.e. index of top left cell
-
-				//first calculate on what vertical row this first cell is, what index
-				// 0 0 0, 27 27 27, 54 54 54 (for standard sudoku)
-				var boxStartVertRowIndex = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
-
-				//then calculate where on horisontal row this cell is (0,3 or 6 for standard sudoku)
-				var boxStartHorisontalIndex = (i%boxSideSize) * boxSideSize;
-
-				//combined, this gives us this box's start index
-				//0 3 6 27 30 33 54 57 60, for standard sudoku
-				var boxStartIndex = boxStartVertRowIndex + boxStartHorisontalIndex;
-
-
 				for(var j=0; j < boardSize; j++){
-					//0,1,2...9 for first horisontal row in standard sudoku
 					hrow.push(boardSize*i + j);
-					//0,9,18...72 for first vertical row in standard sudoku
 					vrow.push(boardSize*j + i);
 
-					//a box has dimensions boxSideSize by boxSideSize (standard sudoku: 3x3)
 					if(j < boxSideSize){
-						//..so we need two loops
 						for(var k=0; k < boxSideSize; k++){
+							//0, 0,0, 27, 27,27, 54, 54, 54 for a standard sudoku
+							var a = Math.floor(i/boxSideSize) * boardSize * boxSideSize;
+							//[0-2] for a standard sudoku
+							var b = (i%boxSideSize) * boxSideSize;
+							var boxStartIndex = a +b; //0 3 6 27 30 33 54 57 60
+
+								//every boxSideSize box, skip boardSize num rows to next box (on new horizontal row)
+								//Math.floor(i/boxSideSize)*boardSize*2
+								//skip across horizontally to next box
+								//+ i*boxSideSize;
+
+
 							box.push(boxStartIndex + boardSize*j + k);
 						}
 					}
@@ -233,7 +229,7 @@
 					board[j] = {
 						val: cellVal
 						,candidates: candidates
-						//,title: "" possibly add in 'A1. B1...etc
+						//,title: "" possibl add in 'A1. B1...etc
 					}
 				}
 			}
@@ -293,6 +289,21 @@
 			return s;
 		}
 
+
+		/* updateUI
+		 * --------------
+		 *  updates the UI
+		 * -----------------------------------------------------------------
+		var updateUI = function(opts){
+			var opts = opts || {};
+			var paintNew = (typeof opts.paintNew !== "undefined") ? opts.paintNew : true;
+			updateUIBoard(paintNew);
+		}*/
+
+		/* updateUIBoard -
+		 * --------------
+		 *  updates the board with our latest values
+		 * -----------------------------------------------------------------*/
 		 var updateUIBoard = function(paintNew){
 			//log("re painting every input on board..");
 			$boardInputs
@@ -318,13 +329,17 @@
 		 * -----------------------------------------------------------------*/
 		 var updateUIBoardCell = function(cellIndex, opts){
 			var opts = opts || {};
+			//log("updateUIBoardCell: "+cellIndex);
+			//if(!(opts.mode && opts.mode === "only-candidates")){
+				var newVal = board[cellIndex].val;
 
-			var newVal = board[cellIndex].val;
+				//$boardInputs.removeClass("highlight-val");
 
-			$("#input-"+cellIndex)
-				.val(newVal)
-				.addClass("highlight-val");
-
+				//shouldn't always add hightlight-val class
+				$("#input-"+cellIndex)
+					.val(newVal)
+					.addClass("highlight-val");
+			//}
 			$("#input-"+cellIndex+"-candidates")
 				.html(buildCandidatesString(board[cellIndex].candidates));
 		}
@@ -359,7 +374,6 @@
 					cellUpdated = true;
 				}
 			}
-
 			if(cellUpdated && solveMode === "step")
 				updateUIBoardCell(cell, {mode: "only-candidates"});
 		}
@@ -446,21 +460,22 @@
 
 		/* resetCandidates
 		-----------------------------------------------------------------*/
-		var resetCandidates = function(){
+		var resetCandidates = function(updateUI){
 			var resetCandidatesList = boardNumbers.slice(0);
 			for(var i=0; i <boardSize*boardSize;i++){
 				if(board[i].val === null){
 					board[i].candidates = resetCandidatesList.slice(); //otherwise same list (not reference!) on every cell
-					$("#input-"+i+"-candidates").html(buildCandidatesString(resetCandidatesList));
-				} else {
-					$("#input-"+i+"-candidates").html("");
+					if(updateUI !== false)
+						$("#input-"+i+"-candidates").html(buildCandidatesString(resetCandidatesList));
+				} else if(updateUI !== false) {
+						$("#input-"+i+"-candidates").html("");
 				}
 			}
 		}
 
-		/* fillInBoardCell - does not update UI
+		/* setBoardCell - does not update UI
 		-----------------------------------------------------------------*/
-		var fillInBoardCell = function(cellIndex, val){
+		var setBoardCell = function(cellIndex, val){
 			var boardCell = board[cellIndex];
 			//update val
 			boardCell.val = val;
@@ -614,7 +629,7 @@
 
 						//log("fill in single empty cell " + emptyCell.cell+", val: "+val);
 
-						fillInBoardCell(emptyCell.cell, val[0]); //does not update UI
+						setBoardCell(emptyCell.cell, val[0]); //does not update UI
 						if(solveMode==="step")
 							UIBoardHighlightCandidate(emptyCell.cell, val[0]);
 
@@ -704,7 +719,7 @@
 							//log("only slot where "+digit+" appears in house. ");
 
 
-							fillInBoardCell(cellIndex, digit); //does not update UI
+							setBoardCell(cellIndex, digit); //does not update UI
 
 							if(solveMode==="step")
 								UIBoardHighlightCandidate(cellIndex, digit);
@@ -727,7 +742,7 @@
 		 * -----------------------------------------------------------------*/
 		function singleCandidate(){
 			//before we start with candidate strategies, we need to update candidates from last round:
-			visualEliminationOfCandidates(); //TODO: wrong place.. call from solveFn?
+			visualEliminationOfCandidates(); //TODO: a bit hackyy, should probably not be here
 
 			//for each cell
 
@@ -749,7 +764,7 @@
 					//log("only one candidate in cell: "+digit+" in house. ");
 
 
-					fillInBoardCell(i, digit); //does not update UI
+					setBoardCell(i, digit); //does not update UI
 					if(solveMode==="step")
 						UIBoardHighlightCandidate(i, digit);
 
@@ -859,7 +874,7 @@
 							var cellsUpdated = removeCandidatesFromCells(cellsEffected, [digit]);
 
 							if(cellsUpdated.length > 0){
-								log("pointing: digit "+digit+", from houseType: "+houseType);
+								// log("pointing: digit "+digit+", from houseType: "+houseType);
 
 								if(solveMode === "step")
 									highLightCandidatesOnCells([digit], cellsWithCandidate);
@@ -1055,8 +1070,7 @@
 
 
 
-		/*
-
+		/* hiddenLockedCandidates
 		 * --------------
 		 * looks for n nr of cells in house, which together has exactly n unique candidates.
 			this means these candidates will go into these cells, and can be removed elsewhere in house.
@@ -1075,7 +1089,10 @@
 					if(numbersLeft(house).length <= n) //can't eliminate any candidates
 						continue;
 					var combineInfo = []; //{candate: x, cellsWithCandidate: []}, {} ..
+					//combinedCandidates,cellsWithCandidate;
 					var minIndexes = [-1];
+					//log("--------------");
+					//log("house: ["+i+"]["+j+"]");
 
 					//checks every combo of n candidates in house, returns pattern, or false
 					var result = checkLockedCandidates(house, 0);
@@ -1089,12 +1106,16 @@
 				//log("startIndex: "+startIndex);
 				for(var i=Math.max(startIndex, minIndexes[startIndex]); i <= boardSize-n+startIndex; i++){
 
+					//log(i);
 					//never check this cell again, in this loop
 					minIndexes[startIndex] = i+1;
 					//or in a this loop deeper down in recursions
 					minIndexes[startIndex+1] = i+1;
 
 					var candidate = i+1;
+					//log(candidate);
+
+
 					var possibleCells = cellsForCandidate(candidate,house);
 
 					if(possibleCells.length === 0 || possibleCells.length > n)
@@ -1113,6 +1134,7 @@
 							}
 						}
 						if(temp.length > n){
+							//log("combined candidates spread over > n cells");
 							continue; //combined candidates spread over > n cells, won't work
 						}
 
@@ -1268,11 +1290,10 @@
 				if(strategies.length > i+1) {
 					return solveFn(i+1);
 				} else {
-					//log("we ran out of strategies..");
-					if(typeof opts.boardErrorFn === "function")
+					if(typeof opts.boardErrorFn === "function" && !generatingMode)
 						opts.boardErrorFn({msg: "no more strategies"})
 
-					if(!gradingMode && solveMode==="all")
+					if(!gradingMode && !generatingMode && solveMode==="all")
 						updateUIBoard(false);
 					return false;
 				}
@@ -1391,9 +1412,9 @@
 						if(alreadyExistingCellInHouseWithDigit === id)
 							continue;
 
-						//make as incorrect in UI
 						$("#input-"+alreadyExistingCellInHouseWithDigit
 							+", #input-"+id).addClass("board-cell--error");
+						//make as incorrect in UI
 
 						//input was incorrect, so don't update our board model
 						return;
@@ -1465,7 +1486,7 @@
 			var boardClone = JSON.parse(JSON.stringify(board));
 			var canContinue = true;
 			while(canContinue) {
-				var startStrat = onlyUpdatedCandidates ? 1 : 0; //was 2 : 0
+				var startStrat = onlyUpdatedCandidates ? 2 : 0;
 				canContinue = solveFn(startStrat);
 			}
 
@@ -1501,6 +1522,112 @@
 
 			return data;
 		 }
+
+
+		 var setBoardCellWithRandomCandidate = function(cellIndex, forceUIUpdate){
+			// CHECK still valid
+			visualEliminationOfCandidates();
+			// DRAW RANDOM CANDIDATE
+			// don't draw already invalidated candidates for cell
+			var invalids = invalidCandidates && invalidCandidates[cellIndex];
+			// TODO: don't use JS filter - not supported enough(?)
+			var candidates = board[cellIndex].candidates.filter(function(candidate){
+				if(!candidate || (invalids && contains(invalids, candidate)))
+					return false;
+				return candidate;
+			});
+			// if cell has 0 candidates - fail to set cell.
+			if(candidates.length === 0) {
+				return false;
+			}
+			var randIndex = Math.round ( Math.random() * (candidates.length - 1));
+			var randomCandidate = candidates[randIndex];
+			// UPDATE BOARD
+			setBoardCell(cellIndex, randomCandidate);
+			return true;
+		}
+
+		var generateBoardAnswerRecursively = function(cellIndex){
+			if((cellIndex+1) > (boardSize*boardSize)){
+				//done
+				invalidCandidates = [];
+				return true;
+			}
+			if(setBoardCellWithRandomCandidate(cellIndex)){
+				generateBoardAnswerRecursively(cellIndex + 1);
+			} else {
+				if(cellIndex <= 0)
+					return false;
+				var lastIndex = cellIndex - 1;
+				invalidCandidates[lastIndex] = invalidCandidates[lastIndex] || [];
+				invalidCandidates[lastIndex].push(board[lastIndex].val);
+				// set val back to null
+				setBoardCell(lastIndex, null);
+				// reset candidates, only in model.
+				resetCandidates(false);
+				// reset invalid candidates for cellIndex
+				invalidCandidates[cellIndex] = [];
+				// then try again
+				generateBoardAnswerRecursively(lastIndex);
+				return false;
+			}
+		};
+
+		var easyEnough = function(data){
+			// console.log(data.level);
+			if(data.level === "easy")
+				return true;
+			if(data.level === "medium")
+				return difficulty !== "easy";
+			if(data.level === "hard")
+				return difficulty !== "easy" && difficulty !== "medium";
+			if(data.level === "very hard")
+				return difficulty !== "easy" && difficulty !== "medium" && difficulty !== "hard";
+		}
+		var hardEnough = function(data) {
+			if(difficulty === "easy")
+				return true;
+			if(difficulty === "medium")
+				return data.level !== "easy";
+			if(difficulty === "hard")
+				return data.level !== "easy" && data.level !== "medium";
+			if(difficulty === "very hard")
+				return data.level !== "easy" && data.level !== "medium" && data.level !== "hard";
+		}
+
+		var digCells = function(){
+			var cells = [];
+			var given = boardSize*boardSize;
+			var minGiven = 17;
+			if(difficulty === "easy"){
+				minGiven = 40;
+			} else if(difficulty === "medium"){
+				minGiven = 30;
+			}
+			for (var i=0; i < boardSize*boardSize; i++){
+				cells.push(i);
+			}
+
+			while(cells.length > 0 && given > minGiven){
+				var randIndex = Math.round ( Math.random() * (cells.length - 1));
+				var cellIndex = cells.splice(randIndex,1);
+				var val = board[cellIndex].val;
+
+				// remove value from this cell
+				setBoardCell(cellIndex, null);
+				// reset candidates, only in model.
+				resetCandidates(false);
+
+				var data = analyzeBoard();
+				if (data.finished !== false && easyEnough(data)) {
+					given--;
+				} else {
+					// reset - don't dig this cell
+					setBoardCell(cellIndex, val);
+				}
+
+			}
+		}
 
 
 		/*
@@ -1539,14 +1666,14 @@
 			solveMode = "all";
 			var canContinue = true;
 			while(canContinue) {
-				var startStrat = onlyUpdatedCandidates ? 1 : 0; // was 2 : 0
+				var startStrat = onlyUpdatedCandidates ? 2 : 0;
 				canContinue = solveFn(startStrat);
 			};
 		}
 
 		var solveStep = function(){
 			solveMode = "step";
-			var startStrat = onlyUpdatedCandidates ? 1 : 0; // was 2 : 0
+			var startStrat = onlyUpdatedCandidates ? 2 : 0;
 			solveFn(startStrat);
 		}
 
@@ -1570,6 +1697,33 @@
 			candidatesShowing = true;
 		}
 
+		var generateBoard = function(diff){
+			clearBoard();
+			difficulty = diff || "medium";
+			generatingMode = true;
+			solveMode = "all";
+
+			// the board generated will possibly not be hard enough
+			// (if you asked for "hard", you most likely get "medium")
+			generateBoardAnswerRecursively(0);
+
+			// attempt one - save the answer, and try digging multiple times.
+			var boardAnswer = board.slice();
+
+			var boardTooEasy = true;
+
+			while(boardTooEasy){
+				digCells();
+				var data = analyzeBoard();
+				if(hardEnough(data))
+					boardTooEasy = false;
+				else
+					board = boardAnswer;
+			}
+
+			updateUIBoard();
+		};
+
 		return {
 			solveAll : solveAll
 			,solveStep : solveStep
@@ -1579,6 +1733,7 @@
 			,setBoard : setBoard
 			,hideCandidates : hideCandidates
 			,showCandidates : showCandidates
+			,generateBoard : generateBoard
 		}
 	};
 

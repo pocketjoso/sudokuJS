@@ -24,9 +24,9 @@ SudokuJS currently requires jQuery.
 		 , , ,4, ,8, ,2,9
 		, , , , , , , , ,4
 		,8,5, , ,2, , , ,7
-		, , ,8,3,7,4,2, , 
-		, ,2, , , , , , , 
-		, , ,3,2,6,1,7, , 
+		, , ,8,3,7,4,2, ,
+		, ,2, , , , , , ,
+		, , ,3,2,6,1,7, ,
 		, , , , ,9,3,6,1,2
 		,2, , , , , ,4, ,3
 		,1,3, ,6,4,2, ,7,undefined
@@ -39,54 +39,69 @@ SudokuJS currently requires jQuery.
     </script>
 
 #### Solving
-Let SudokuJS solve your puzzle - either step by step, or all in one go:
+Let `SudokuJS` solve your puzzle - either step by step, or all in one go:
 
 	mySudokuJS.solveStep();
 	mySudokuJS.solveAll();
-	
+
 #### Analyzing the board
 The solver can tell you info about the board.
 
 	var data = mySudokuJS.analyzeBoard();
-	
+
 	//data.error -- board is incorrect
-	//data.finished === false -- board can't be solved because it requires more advanced strategies 
-	
+	//data.finished === false -- board can't be solved because it requires more advanced strategies
+
 	//if no error, and data.finished === true
 	//data.level -- "easy"|"medium"|"hard"
 	//data.score -- int [experimental]
 	//data.usedStrategies -- [{title, freq}, ..],ranked by difficulty, easiest first
 
+#### Board Generation
+`SudokuJS` can generate sudoku puzzles of varying difficulty.
+
+	mySudokuJS.generateBoard('easy');
+	mySudokuJS.generateBoard('medium');
+	mySudokuJS.generateBoard('hard');
+	mySudokuJS.generateBoard('very hard');
+
+The current implementation for board generation cannot guarantee hard or
+very hard puzzles generated on every try, so instead it continues over and over
+until is has succeeded. This means loading a very hard board can sometimes
+take up to a few seconds.
+
 #### Candidates
 Candidates are hidden when a board loads. To show/hide candidates:
-	
+
 	mySudokuJS.showCandidates();
 	mySudokuJS.hideCandidates();
-	
-SudokuJS automatically removes impossible candidates on showCandidates(); candidates that can be eliminated via visualElimination (number already exists in same house).
+
+SudokuJS automatically removes impossible candidates on showCandidates();
+candidates that can be eliminated via visualElimination (number already exists in same house).
 
 #### Clear board
 Useful before entering new puzzle, if using keyboard input in the GUI.
 
 	mySudokuJS.clearBoard();
-	
+
 #### Get/Set board
-Get the board and save it away if you want. Set a new board and play with that one instead. Setting automatically resets everything back to init state.
+Get the board and save it away if you want. Set a new board and play with that one instead.
+Setting automatically resets everything back to init state.
 
 	mySudokuJS.getBoard();
-	
+
 	var newBoard = [
 		...
 	]
-	
+
 	mySudokuJS.setBoard(newBoard);
-	
-	
-	
+
+
+
 ### Callbacks
-	
+
 #### boardUpdatedFn
-Fires whenever the board is updated, whether by user or solver. 
+Fires whenever the board is updated, whether by user or solver.
 
 	 $("#sudoku").sudokuJS({
 		board: board
@@ -111,7 +126,7 @@ Fires when the board has been completed.
 			alert("board was finished!");
 		}
 	});
- 
+
 
 #### boardErrorFn
 Fires whenever the board is found to be incorrect, f.e. if solver detects there is no solution to board, or if passed in board is of invalid size.
@@ -123,7 +138,7 @@ Fires whenever the board is found to be incorrect, f.e. if solver detects there 
 			alert("board error!");
 		}
 	});
- 
+
 #### candidateShowToggleFn
  The solver automatically switches to showing candidates when a solve step was invoked which only updated the candidates on the board. To catch this change (for updating UI, etc), there is a callback:
 
@@ -133,10 +148,14 @@ Fires whenever the board is found to be incorrect, f.e. if solver detects there 
 			alert("candidates showing: " + showingBoolean); //true|false
 		}
 	}
-	
 
 ### Extra
 The solver is board size agnostic, so you can pass in any valid sudoku sized board (f.e. 4x4, 9x9, 16x16) - however the CSS included only handles 9x9 boards. Currently you can't change boardSize after init.
 
 ### License
 MIT
+
+### Changelog
+0.3.0 Board generator, easy - very hard  
+0.2.0 Simple UI and better interface  
+0.1.0 Step by step sudoku solver  
