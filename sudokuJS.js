@@ -19,7 +19,8 @@
 		/*
 		 * variables
 		 *-----------*/
-		var	solveMode = "step",
+		var opts = opts || {},
+				solveMode = "step",
 				difficulty = "unknown",
 				candidatesShowing = false,
 				boardFinished = false,
@@ -207,7 +208,7 @@
 		var initBoard = function(){
 			var alreadyEnhanced = (board[0] !== null && typeof board[0] === "object");
 			var nullCandidateList = [];
-			boardSize = Math.sqrt(board.length);
+			boardSize = Math.sqrt(board.length) || 9;
 			$board.attr("data-board-size", boardSize);
 			if(boardSize % 1 !== 0 || Math.sqrt(boardSize) % 1 !== 0) {
 				log("invalid boardSize: "+boardSize);
@@ -1629,18 +1630,50 @@
 			}
 		}
 
+		var generateBoard = function(diff){
+			if($boardInputs)
+				clearBoard();
+			difficulty = diff || "medium";
+			generatingMode = true;
+			solveMode = "all";
+
+			// the board generated will possibly not be hard enough
+			// (if you asked for "hard", you most likely get "medium")
+			generateBoardAnswerRecursively(0);
+
+			// attempt one - save the answer, and try digging multiple times.
+			var boardAnswer = board.slice();
+
+			var boardTooEasy = true;
+
+			while(boardTooEasy){
+				digCells();
+				var data = analyzeBoard();
+				if(hardEnough(data))
+					boardTooEasy = false;
+				else
+					board = boardAnswer;
+			}
+			if($boardInputs)
+				updateUIBoard();
+		};
+
 
 		/*
 		 * init/API/events
 		 *-----------*/
-		if(opts.board)
+		if(!opts.board) {
+			initBoard();
+			generateBoard(opts.difficulty);
+			buildBoard();
+		} else {
 			board = opts.board;
-		else
-			window.alert("you need a board to play!");
+			initBoard();
+			buildBoard();
+		}
 
-		initBoard();
-		buildBoard();
 		visualEliminationOfCandidates();
+
 
 		$boardInputs.on("keyup", function(e){
 			var $this = $(this);
@@ -1696,33 +1729,6 @@
 			$board.addClass("showCandidates");
 			candidatesShowing = true;
 		}
-
-		var generateBoard = function(diff){
-			clearBoard();
-			difficulty = diff || "medium";
-			generatingMode = true;
-			solveMode = "all";
-
-			// the board generated will possibly not be hard enough
-			// (if you asked for "hard", you most likely get "medium")
-			generateBoardAnswerRecursively(0);
-
-			// attempt one - save the answer, and try digging multiple times.
-			var boardAnswer = board.slice();
-
-			var boardTooEasy = true;
-
-			while(boardTooEasy){
-				digCells();
-				var data = analyzeBoard();
-				if(hardEnough(data))
-					boardTooEasy = false;
-				else
-					board = boardAnswer;
-			}
-
-			updateUIBoard();
-		};
 
 		return {
 			solveAll : solveAll

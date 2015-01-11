@@ -26,10 +26,18 @@ SudokuJS currently requires jQuery (on TODO to remove this dependency).
     <div id='sudoku'></div>
 
     <script>
+
+    var mySudokuJS = $("#sudoku").sudokuJS({
+        difficulty: "medium" ("easy"|"medium"|"hard"|"very hard")
+    });
+    </script>
+
+You can also pass in your own board:
+
 	//array representing a standard sudoku puzzle of size 9
 	//use space for empty cells
 	var board = [
-		 , , ,4, ,8, ,2,9
+		, , ,4, ,8, ,2,9
 		, , , , , , , , ,4
 		,8,5, , ,2, , , ,7
 		, , ,8,3,7,4,2, ,
@@ -40,11 +48,9 @@ SudokuJS currently requires jQuery (on TODO to remove this dependency).
 		,1,3, ,6,4,2, ,7,undefined
 	]
 	//NOTE: if last cell of board is empty, 'undefined' has to be used as value!
-
-    var mySudokuJS = $("#sudoku").sudokuJS({
-        board: board
-    });
-    </script>
+	var mySudokuJS = $("#sudoku").sudokuJS({
+			board: board
+	});
 
 #### Solving
 Let `SudokuJS` solve your puzzle - either step by step, or all in one go:
@@ -66,7 +72,8 @@ The solver can tell you info about the board.
 	//data.usedStrategies -- [{title, freq}, ..],ranked by difficulty, easiest first
 
 #### Board Generation
-`SudokuJS` can generate sudoku puzzles of varying difficulty.
+`SudokuJS` generate new sudoku puzzles on init when no board is passed in,
+ and on `generateBoard` calls:
 
 	mySudokuJS.generateBoard('easy');
 	mySudokuJS.generateBoard('medium');
