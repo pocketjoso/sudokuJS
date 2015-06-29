@@ -19,8 +19,8 @@
 		/*
 		 * variables
 		 *-----------*/
-		var opts = opts || {},
-				solveMode = "step",
+		opts = opts || {};
+		var solveMode = "step",
 				difficulty = "unknown",
 				candidatesShowing = false,
 				boardFinished = false,
@@ -35,22 +35,22 @@
 		the score reflects how much increased difficulty the board gets by having the pattern rather than an already solved cell
 		*/
 			strategies = [
-				 {title: "openSingles", fn:	openSingles, score :  .1	}
+				{title: "openSingles", fn:	openSingles, score : 0.1	},
 				 //harder for human to spot
-				,{title: "singleCandidate", fn:	singleCandidate, score : 9	}
-				,{title: "visualElimination", fn:	visualElimination, score : 8	}
+				{title: "singleCandidate", fn:	singleCandidate, score : 9	},
+				{title: "visualElimination", fn:	visualElimination, score : 8	},
 				//only eliminates one candidate, should have lower score?
-				,{title: "nakedPair", fn:	nakedPair, score : 50	}
-				,{title: "pointingElimination", fn:	pointingElimination, score : 80	}
+				{title: "nakedPair", fn:	nakedPair, score : 50	},
+				{title: "pointingElimination", fn:	pointingElimination, score : 80	},
 				//harder for human to spot
-				,{title: "hiddenPair", fn:	hiddenPair, score :	90	}
-				,{title: "nakedTriplet", fn:	nakedTriplet, score :	100 }
+				{title: "hiddenPair", fn:	hiddenPair, score :	90	},
+				{title: "nakedTriplet", fn:	nakedTriplet, score :	100 },
 				//never gets used unless above strats are turned off?
-				,{title: "hiddenTriplet", fn:	hiddenTriplet, score :	140	}
+				{title: "hiddenTriplet", fn:	hiddenTriplet, score :	140	},
 				//never gets used unless above strats are turned off?
-				,{title: "nakedQuad", fn:	nakedQuad, score :	150 }
+				{title: "nakedQuad", fn:	nakedQuad, score :	150 },
 				//never gets used unless above strats are turned off?
-				,{title: "hiddenQuad", fn:	hiddenQuad, score :	280	}
+				{title: "hiddenQuad", fn:	hiddenQuad, score :	280	}
 			],
 
 
@@ -71,11 +71,11 @@
 		//indexes of cells in each house - generated on the fly based on boardSize
 			houses = [
 				//hor. rows
-				[]
+				[],
 				//vert. rows
-				,[]
+				[],
 				//boxes
-				,[]
+				[]
 			];
 
 
@@ -94,7 +94,10 @@
 		 * methods
 		 *-----------*/
 		 //shortcut for logging..
-		function log(msg){window.console&&console.log&&console.log(msg)};
+		function log(msg){
+			if(window.console && console.log)
+			 console.log(msg);
+		}
 
 
 		//array contains function
@@ -105,7 +108,7 @@
 				}
 			}
 			return false;
-		}
+		};
 
 		var uniqueArray = function(a) {
 			var temp = {};
@@ -115,7 +118,7 @@
 			for (var k in temp)
 				r.push(k);
 			return r;
-		}
+		};
 
 
 
@@ -149,7 +152,7 @@
 				boardDiff.level = "very hard";
 
 			return boardDiff;
-		}
+		};
 
 
 		/* isBoardFinished
@@ -160,7 +163,7 @@
 					return false;
 			}
 			return true;
-		}
+		};
 
 
 		/* generateHouseIndexList
@@ -198,7 +201,7 @@
 				houses[1].push(vrow);
 				houses[2].push(box);
 			}
-		}
+		};
 
 
 		/* initBoard
@@ -213,7 +216,7 @@
 			if(boardSize % 1 !== 0 || Math.sqrt(boardSize) % 1 !== 0) {
 				log("invalid boardSize: "+boardSize);
 				if(typeof opts.boardErrorFn === "function")
-					opts.boardErrorFn({msg: "invalid board size"})
+					opts.boardErrorFn({msg: "invalid board size"});
 				return;
 			}
 			for (var i=0; i < boardSize; i++){
@@ -228,13 +231,13 @@
 					var cellVal = (typeof board[j] === "undefined") ? null : board[j];
 					var candidates = cellVal === null ? boardNumbers.slice() : nullCandidateList.slice();
 					board[j] = {
-						val: cellVal
-						,candidates: candidates
-						//,title: "" possibl add in 'A1. B1...etc
-					}
+						val: cellVal,
+						candidates: candidates
+						//title: "" possibl add in 'A1. B1...etc
+					};
 				}
 			}
-		}
+		};
 
 
 		/* buildBoard
@@ -258,7 +261,7 @@
 			//save important board elements
 			$boardInputs = $board.find("input");
 			$boardInputCandidates = $board.find(".candidates");
-		}
+		};
 
 		/* buildBoardCell
 		 * -----------------------------------------------------------------*/
@@ -266,15 +269,13 @@
 			var val = (boardCell.val === null) ? "" : boardCell.val;
 			var candidates = boardCell.candidates || [];
 			var candidatesString = buildCandidatesString(candidates);
-			var maxlength = (boardSize < 10) ? " maxlength='1'" : ""
-			return "<div class='sudoku-board-cell'>"
+			var maxlength = (boardSize < 10) ? " maxlength='1'" : "";
+			return "<div class='sudoku-board-cell'>" +
 						//want to use type=number, but then have to prevent chrome scrolling and up down key behaviors..
-						+"<input type='text' pattern='\\d*' novalidate id='input-"+id+"' value='"+val+"'"+maxlength+">"
-						+"<div id='input-"+id+"-candidates' class='candidates'>"
-							+candidatesString
-						+"</div>"
-					+"</div>";
-		}
+						"<input type='text' pattern='\\d*' novalidate id='input-"+id+"' value='"+val+"'"+maxlength+">" +
+						"<div id='input-"+id+"-candidates' class='candidates'>" + candidatesString + "</div>" +
+					"</div>";
+		};
 
 
 		/* buildCandidatesString
@@ -288,7 +289,7 @@
 					s+= "<div>&nbsp;</div> ";
 			}
 			return s;
-		}
+		};
 
 
 		/* updateUI
@@ -321,7 +322,7 @@
 					$candidates.html(buildCandidatesString(board[i].candidates));
 
 				});
-		}
+		};
 
 
 		/* updateUIBoardCell -
@@ -329,7 +330,7 @@
 		 *  updates ONE cell on the board with our latest values
 		 * -----------------------------------------------------------------*/
 		 var updateUIBoardCell = function(cellIndex, opts){
-			var opts = opts || {};
+			opts = opts || {};
 			//log("updateUIBoardCell: "+cellIndex);
 			//if(!(opts.mode && opts.mode === "only-candidates")){
 				var newVal = board[cellIndex].val;
@@ -343,23 +344,23 @@
 			//}
 			$("#input-"+cellIndex+"-candidates")
 				.html(buildCandidatesString(board[cellIndex].candidates));
-		}
+		};
 
-		/* UIBoardHighlightRemoveCandidate
+		/* uIBoardHighlightRemoveCandidate
 		 * --------------
 		 *  highlight candidate in cell that is about to be removed
 		 * -----------------------------------------------------------------*/
-		var UIBoardHighlightRemoveCandidate = function(cellIndex, digit){
+		var uIBoardHighlightRemoveCandidate = function(cellIndex, digit){
 			$("#input-"+cellIndex+"-candidates div:nth-of-type("+digit+")").addClass("candidate--to-remove");
-		}
+		};
 
-		/* UIBoardHighlightCandidate -
+		/* uIBoardHighlightCandidate -
 		 * --------------
 		 *  highight candidate in cell that helps eliminate another candidate
 		 * -----------------------------------------------------------------*/
-		var UIBoardHighlightCandidate = function(cellIndex, digit){
+		var uIBoardHighlightCandidate = function(cellIndex, digit){
 			$("#input-"+cellIndex+"-candidates div:nth-of-type("+digit+")").addClass("candidate--highlight");
-		}
+		};
 
 
 		/* removeCandidatesFromCell
@@ -377,7 +378,7 @@
 			}
 			if(cellUpdated && solveMode === "step")
 				updateUIBoardCell(cell, {mode: "only-candidates"});
-		}
+		};
 
 
 		/* removeCandidatesFromCells
@@ -398,13 +399,13 @@
 
 						if(solveMode==="step"){
 							//highlight candidate as to be removed on board
-							UIBoardHighlightRemoveCandidate(cells[i],candidate);
+							uIBoardHighlightRemoveCandidate(cells[i],candidate);
 						}
 					}
 				}
 			}
 			return cellsUpdated;
-		}
+		};
 
 		var highLightCandidatesOnCells = function(candidates, cells){
 			for(var i=0; i < cells.length; i++){
@@ -412,11 +413,11 @@
 
 				for(var j=0; j < cellCandidates.length; j++){
 					if(contains(candidates, cellCandidates[j]))
-						UIBoardHighlightCandidate(cells[i],cellCandidates[j]);
+						uIBoardHighlightCandidate(cells[i],cellCandidates[j]);
 				}
 
 			}
-		}
+		};
 
 
 		var resetBoardVariables = function() {
@@ -425,7 +426,7 @@
 			onlyUpdatedCandidates = false;
 			usedStrategies = [];
 			gradingMode = false;
-		}
+		};
 
 
 		/* clearBoard
@@ -437,9 +438,9 @@
 			var cands = boardNumbers.slice(0);
 			for(var i=0; i <boardSize*boardSize;i++){
 				board[i] = {
-					val: null
-					,candidates: cands.slice()
-				}
+					val: null,
+					candidates: cands.slice()
+				};
 			}
 
 			//reset UI
@@ -448,7 +449,7 @@
 				.val("");
 
 			updateUIBoard(false);
-		}
+		};
 
 		var getNullCandidatesList = function() {
 			var l = [];
@@ -456,7 +457,7 @@
 				l.push(null);
 			}
 			return l;
-		}
+		};
 
 
 		/* resetCandidates
@@ -472,7 +473,7 @@
 						$("#input-"+i+"-candidates").html("");
 				}
 			}
-		}
+		};
 
 		/* setBoardCell - does not update UI
 		-----------------------------------------------------------------*/
@@ -482,7 +483,7 @@
 			boardCell.val = val;
 			if(val !== null)
 				boardCell.candidates = getNullCandidatesList();
-		}
+		};
 
 		/* indexInHouse
 		 * --------------
@@ -496,7 +497,7 @@
 			}
 			//not in house
 			return false;
-		 }
+		};
 
 
 
@@ -518,7 +519,7 @@
 			houses.push(box);
 
 			return houses;
-		 }
+		};
 
 
 		/* numbersLeft
@@ -536,7 +537,7 @@
 			}
 			//return remaining numbers
 			return numbers;
-		 }
+		};
 
 
 		 /* numbersTaken
@@ -552,7 +553,7 @@
 			}
 			//return remaining numbers
 			return numbers;
-		 }
+		};
 
 
 		 /* candidatesLeft
@@ -567,7 +568,7 @@
 					t.push(candidates[i]);
 			}
 			return t;
-		 }
+		};
 
 
 		 /* cellsForCandidate
@@ -577,13 +578,13 @@
 		 var cellsForCandidate = function(candidate,house){
 			var t = [];
 			for(var i=0; i < house.length; i++){
-				var cell = board[house[i]]
+				var cell = board[house[i]];
 				var candidates = cell.candidates;
 				if(contains(candidates, candidate))
 					t.push(house[i]);
 			}
 			return t;
-		 }
+		};
 
 
 
@@ -632,7 +633,7 @@
 
 						setBoardCell(emptyCell.cell, val[0]); //does not update UI
 						if(solveMode==="step")
-							UIBoardHighlightCandidate(emptyCell.cell, val[0]);
+							uIBoardHighlightCandidate(emptyCell.cell, val[0]);
 
 						return [emptyCell.cell];
 					}
@@ -723,7 +724,7 @@
 							setBoardCell(cellIndex, digit); //does not update UI
 
 							if(solveMode==="step")
-								UIBoardHighlightCandidate(cellIndex, digit);
+								uIBoardHighlightCandidate(cellIndex, digit);
 
 							onlyUpdatedCandidates = false;
 							return [cellIndex]; //one step at the time
@@ -767,7 +768,7 @@
 
 					setBoardCell(i, digit); //does not update UI
 					if(solveMode==="step")
-						UIBoardHighlightCandidate(i, digit);
+						uIBoardHighlightCandidate(i, digit);
 
 					onlyUpdatedCandidates = false;
 					return [i]; //one step at the time
@@ -842,8 +843,7 @@
 								cellsWithCandidate.push(cell);
 							}
 						}
-						if((sameAltHouse === true || sameAltTwoHouse === true )
-						&& cellsWithCandidate.length > 0){
+						if((sameAltHouse === true || sameAltTwoHouse === true ) && cellsWithCandidate.length > 0){
 							//log("sameAltHouse..");
 							//we still need to check that this actually eliminates something, i.e. these possible cells can't be only in house
 
@@ -1004,9 +1004,9 @@
 
 						//get all cells in house EXCEPT cellsWithCandidates
 						var cellsEffected = [];
-						for (var x=0; x< boardSize; x++){
-							if(!contains(cellsWithCandidates, house[x])) {
-								cellsEffected.push(house[x]);
+						for (var y=0; y< boardSize; y++){
+							if(!contains(cellsWithCandidates, house[y])) {
+								cellsEffected.push(house[y]);
 							}
 						}
 
@@ -1168,9 +1168,9 @@
 
 
 						var candidatesToRemove = [];
-						for(var a=0; a<boardSize; a++){
-							if(!contains(combinedCandidates, a+1))
-								candidatesToRemove.push(a+1);
+						for(var b=0; b<boardSize; b++){
+							if(!contains(combinedCandidates, b+1))
+								candidatesToRemove.push(b+1);
 						}
 						//log("candidates to remove:")
 						//log(candidatesToRemove);
@@ -1255,19 +1255,17 @@
 					//log("usedStrats:")
 					//log(usedStrategies);
 
-					var boardDiff = calcBoardDifficulty(usedStrategies);
-
 					//callback
 					if(typeof opts.boardFinishedFn === "function"){
 						opts.boardFinishedFn({
-							difficultyInfo: boardDiff
+							difficultyInfo: calcBoardDifficulty(usedStrategies)
 						});
 					}
 				}
 
 				return false; //we're done!
-			}
-			else if (solveMode === "step"){
+
+			} else if (solveMode === "step"){
 				//likely that we're updating twice if !candidatesShowing && !onlyUpdatedCandidates,
 				//but we can't tell if user just toggled candidatesShowing.. so have to do it here (again).
 				if(effectedCells && effectedCells !== -1){
@@ -1292,26 +1290,25 @@
 					return solveFn(i+1);
 				} else {
 					if(typeof opts.boardErrorFn === "function" && !generatingMode)
-						opts.boardErrorFn({msg: "no more strategies"})
+						opts.boardErrorFn({msg: "no more strategies"});
 
 					if(!gradingMode && !generatingMode && solveMode==="all")
 						updateUIBoard(false);
 					return false;
 				}
-			}
-			else if (boardError){
+
+			} else if (boardError){
 				if(typeof opts.boardErrorFn === "function")
-					opts.boardErrorFn({msg: "Board incorrect"})
+					opts.boardErrorFn({msg: "Board incorrect"});
 
 				if(solveMode === "all") {
 					updateUIBoard(false); //show user current state of board... how much they need to reset for it to work again.
 				}
 
 				return false; //we can't do no more solving
-			}
 
-			// if user clicked solve step, and we're only going to fill in a new value (not messing with candidates) - then show user straight away
-			else if(solveMode==="step"){
+			} else if(solveMode==="step"){
+				// if user clicked solve step, and we're only going to fill in a new value (not messing with candidates) - then show user straight away
 				//callback
 				if(typeof opts.boardUpdatedFn === "function") {
 					opts.boardUpdatedFn({cause: strategies[i].title, cellsUpdated: effectedCells});
@@ -1320,11 +1317,10 @@
 				//check if this finished the board
 				if(isBoardFinished()){
 					boardFinished = true;
-					var boardDiff = calcBoardDifficulty(usedStrategies);
 					//callback
 					if(typeof opts.boardFinishedFn === "function"){
 						opts.boardFinishedFn({
-							difficultyInfo: boardDiff
+							difficultyInfo: calcBoardDifficulty(usedStrategies)
 						});
 					}
 					//paint the last cell straight away
@@ -1335,14 +1331,14 @@
 
 
 				//if a new number was filled in, show this on board
-				if(!candidatesShowing && !onlyUpdatedCandidates
-				&& effectedCells && effectedCells !== -1){
+				if(!candidatesShowing && !onlyUpdatedCandidates &&
+					effectedCells && effectedCells !== -1){
 					//remove highlights from last step
 					$boardInputs.removeClass("highlight-val");
 					$(".candidate--highlight").removeClass("candidate--highlight");
 					//update board with new effected cell(s) info
-					for(var j=0; j < effectedCells.length; j++){
-						updateUIBoardCell(effectedCells[j]);
+					for(var k=0; k < effectedCells.length; k++){
+						updateUIBoardCell(effectedCells[k]);
 					}
 				}
 			}
@@ -1361,7 +1357,7 @@
 			}
 
 			return true; // can continue
-		}
+		};
 
 
 		/* keyboardMoveBoardFocus - puts focus on adjacent board cell
@@ -1387,7 +1383,7 @@
 
 			//focus input
 			$("#input-"+newId).focus();
-		}
+		};
 
 		/* keyboardNumberInput - update our board model
 		 * -----------------------------------------------------------------*/
@@ -1413,8 +1409,8 @@
 						if(alreadyExistingCellInHouseWithDigit === id)
 							continue;
 
-						$("#input-"+alreadyExistingCellInHouseWithDigit
-							+", #input-"+id).addClass("board-cell--error");
+						$("#input-" + alreadyExistingCellInHouseWithDigit + ", #input-"+id)
+							.addClass("board-cell--error");
 						//make as incorrect in UI
 
 						//input was incorrect, so don't update our board model
@@ -1442,8 +1438,7 @@
 						});
 					}
 				}
-			}
-			else {
+			} else {
 				boardError = false; //reset, in case they fixed board - otherwise, we'll find the error again
 				val = null;
 				//add back candidates to UI cell
@@ -1467,14 +1462,14 @@
 				opts.boardUpdatedFn({cause: "user input", cellsUpdated: [id]});
 
 			onlyUpdatedCandidates = false;
-		}
+		};
 
 		/* toggleShowCandidates
 		 * -----------------------------------------------------------------*/
 		var toggleShowCandidates = function(){
 			$board.toggleClass("showCandidates");
 			candidatesShowing = !candidatesShowing;
-		}
+		};
 
 		 /* analyzeBoard
 		  * solves a copy of the current board(without updating the UI),
@@ -1503,9 +1498,9 @@
 					//only return strategies that were actually used
 					if (typeof usedStrategies[i] !=="undefined"){
 						data.usedStrategies[i] = {
-							title: strat.title
-							,freq: usedStrategies[i]
-						}
+							title: strat.title,
+							freq: usedStrategies[i]
+						};
 					}
 				}
 
@@ -1522,7 +1517,7 @@
 			board = boardClone;
 
 			return data;
-		 }
+		};
 
 
 		 var setBoardCellWithRandomCandidate = function(cellIndex, forceUIUpdate){
@@ -1546,7 +1541,7 @@
 			// UPDATE BOARD
 			setBoardCell(cellIndex, randomCandidate);
 			return true;
-		}
+		};
 
 		var generateBoardAnswerRecursively = function(cellIndex){
 			if((cellIndex+1) > (boardSize*boardSize)){
@@ -1584,7 +1579,7 @@
 				return difficulty !== "easy" && difficulty !== "medium";
 			if(data.level === "very hard")
 				return difficulty !== "easy" && difficulty !== "medium" && difficulty !== "hard";
-		}
+		};
 		var hardEnough = function(data) {
 			if(difficulty === "easy")
 				return true;
@@ -1594,7 +1589,7 @@
 				return data.level !== "easy" && data.level !== "medium";
 			if(difficulty === "very hard")
 				return data.level !== "easy" && data.level !== "medium" && data.level !== "hard";
-		}
+		};
 
 		var digCells = function(){
 			var cells = [];
@@ -1628,7 +1623,7 @@
 				}
 
 			}
-		}
+		};
 
 		var generateBoard = function(diff){
 			if($boardInputs)
@@ -1701,46 +1696,46 @@
 			while(canContinue) {
 				var startStrat = onlyUpdatedCandidates ? 2 : 0;
 				canContinue = solveFn(startStrat);
-			};
-		}
+			}
+		};
 
 		var solveStep = function(){
 			solveMode = "step";
 			var startStrat = onlyUpdatedCandidates ? 2 : 0;
 			solveFn(startStrat);
-		}
+		};
 
 		var getBoard = function(){
 			return board;
-		}
+		};
 
 		var setBoard = function(newBoard){
 			board = newBoard;
 			initBoard();
 			visualEliminationOfCandidates();
 			updateUIBoard(false);
-		}
+		};
 
 		var hideCandidates = function(){
 			$board.removeClass("showCandidates");
 			candidatesShowing = false;
-		}
+		};
 		var showCandidates = function(){
 			$board.addClass("showCandidates");
 			candidatesShowing = true;
-		}
+		};
 
 		return {
-			solveAll : solveAll
-			,solveStep : solveStep
-			,analyzeBoard : analyzeBoard
-			,clearBoard : clearBoard
-			,getBoard : getBoard
-			,setBoard : setBoard
-			,hideCandidates : hideCandidates
-			,showCandidates : showCandidates
-			,generateBoard : generateBoard
-		}
+			solveAll : solveAll,
+			solveStep : solveStep,
+			analyzeBoard : analyzeBoard,
+			clearBoard : clearBoard,
+			getBoard : getBoard,
+			setBoard : setBoard,
+			hideCandidates : hideCandidates,
+			showCandidates : showCandidates,
+			generateBoard : generateBoard
+		};
 	};
 
 
