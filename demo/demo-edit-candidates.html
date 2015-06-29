@@ -45,9 +45,9 @@
 		<h1>SudokuJS demo editing candidates</h1>
 
 		<!--show candidates toggle-->
-		<label for="toggleCandidates">Show candidates </label><input id="toggleCandidates" class="js-candidate-toggle" type="checkbox" checked="true"/>
+		<label for="toggleCandidates">Show candidates </label><input id="toggleCandidates" class="js-candidate-toggle" type="checkbox" checked/>
 		<!--edit candidates toggle-->
-		<label for="editCandidates">Edit candidates </label><input id="editCandidates" class="js-edit-candidates-toggle" type="checkbox" checked="true"/>
+		<label for="editCandidates">Edit candidates </label><input id="editCandidates" class="js-edit-candidates-toggle" type="checkbox" checked/>
 		<!--analyze board btn-->
 		<button type="button" class="js-analyze-board-btn">Analyze</button>
 
@@ -85,9 +85,9 @@
 			$clearBoardBtn = $(".js-clear-board-btn"),
 
 			mySudokuJS = $("#sudoku").sudokuJS({
-				board: board
+				board: board,
 				//change state of our candidate showing checkbox on change in sudokuJS
-				,candidateShowToggleFn : function(showing){
+				candidateShowToggleFn : function(showing){
 					$candidateToggle.prop("checked", showing);
 				}
 			});
@@ -127,7 +127,6 @@
 		$candidateToggle.trigger("change");
 
 		$editCandidatesToggle.on("change", function(){
-			console.log('editingCandidates', $(this).is(":checked"));
 			mySudokuJS.setEditingCandidates($(this).is(":checked"));
 		});
 		$editCandidatesToggle.trigger("change");

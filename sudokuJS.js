@@ -1,4 +1,4 @@
-// sudokuJS v0.3.1
+// sudokuJS v0.4.1
 // https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
@@ -1169,9 +1169,9 @@
 
 
 						var candidatesToRemove = [];
-						for(var b=0; b<boardSize; b++){
-							if(!contains(combinedCandidates, b+1))
-								candidatesToRemove.push(b+1);
+						for(var c=0; c<boardSize; c++){
+							if(!contains(combinedCandidates, c+1))
+								candidatesToRemove.push(c+1);
 						}
 						//log("candidates to remove:")
 						//log(candidatesToRemove);
@@ -1666,8 +1666,11 @@
 				else
 					board = boardAnswer;
 			}
+			solveMode = "step";
 			if($boardInputs)
 				updateUIBoard();
+
+			visualEliminationOfCandidates();
 		};
 
 
@@ -1682,9 +1685,8 @@
 			board = opts.board;
 			initBoard();
 			buildBoard();
+			visualEliminationOfCandidates();
 		}
-
-		visualEliminationOfCandidates();
 
 
 		$boardInputs.on("keyup", function(e){
