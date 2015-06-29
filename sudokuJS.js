@@ -1,4 +1,4 @@
-// sudokuJS v0.4.1
+// sudokuJS v0.4.2
 // https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
@@ -1391,6 +1391,9 @@
 		 * -----------------------------------------------------------------*/
 		var toggleCandidateOnCell = function(candidate, cell){
 			var boardCell = board[cell];
+			if(boardCell.val){
+				return;  // don't modify candidates when a cell already has a number
+			}
 			var c = boardCell.candidates;
 			c[candidate-1] = c[candidate-1] === null ? candidate : null;
 			if(solveMode === "step")
@@ -1403,6 +1406,8 @@
 			var val = parseInt(input.val());
 			if(editingCandidates){
 				toggleCandidateOnCell(val, id);
+				// reset value on board
+				input.val(board[id].val);
 				return;
 			}
 
