@@ -94,6 +94,12 @@ Candidates are hidden when a board loads. To show/hide candidates:
 SudokuJS automatically removes impossible candidates on showCandidates();
 candidates that can be eliminated via visualElimination (number already exists in same house).
 
+Candidates can be edited on the board by setting SudokuJS to candidate editing mode:
+
+	mySudokuJS.setEditingCandidates(true);
+
+Input changes on board cells will now toggle the candidates rather than changes the value.
+
 #### Clear board
 Useful before entering new puzzle, if using keyboard input in the GUI.
 
@@ -171,6 +177,7 @@ The solver is board size agnostic, so you can pass in any valid sudoku sized boa
 MIT
 
 ### Changelog
+0.4.0 Candidate editing mode  
 0.3.0 Board generator, easy - very hard  
 0.2.0 Simple UI and better interface  
 0.1.0 Step by step sudoku solver  

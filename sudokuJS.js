@@ -23,6 +23,7 @@
 		var solveMode = "step",
 				difficulty = "unknown",
 				candidatesShowing = false,
+				editingCandidates = false,
 				boardFinished = false,
 				boardError = false,
 				onlyUpdatedCandidates = false,
@@ -1385,10 +1386,26 @@
 			$("#input-"+newId).focus();
 		};
 
+
+		/* toggleCandidateOnCell - used for editingCandidates mode
+		 * -----------------------------------------------------------------*/
+		var toggleCandidateOnCell = function(candidate, cell){
+			var boardCell = board[cell];
+			var c = boardCell.candidates;
+			c[candidate-1] = c[candidate-1] === null ? candidate : null;
+			if(solveMode === "step")
+				updateUIBoardCell(cell, {mode: "only-candidates"});
+		};
+
 		/* keyboardNumberInput - update our board model
 		 * -----------------------------------------------------------------*/
 		var keyboardNumberInput = function(input, id){
 			var val = parseInt(input.val());
+			if(editingCandidates){
+				toggleCandidateOnCell(val, id);
+				return;
+			}
+
 			//log(id+": "+val +" entered.");
 
 			var candidates = getNullCandidatesList(); //[null,null....null];
@@ -1725,6 +1742,10 @@
 			candidatesShowing = true;
 		};
 
+		var setEditingCandidates = function(newVal){
+			editingCandidates = newVal;
+		};
+
 		return {
 			solveAll : solveAll,
 			solveStep : solveStep,
@@ -1734,6 +1755,7 @@
 			setBoard : setBoard,
 			hideCandidates : hideCandidates,
 			showCandidates : showCandidates,
+			setEditingCandidates: setEditingCandidates,
 			generateBoard : generateBoard
 		};
 	};
