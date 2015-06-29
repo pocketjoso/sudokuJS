@@ -5,7 +5,7 @@
 */
 
 .sudoku-board {
-	min-height: 21.6rem;
+	min-height: 22.75rem;
 	margin-bottom: 1em;
 }
 	/*cell (wrapper) contains both cell input and candidates div*/
@@ -20,18 +20,22 @@
 			-- specific for board size 9! need diff rules for diff board sizes
 		*/
 		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(9n+1){
-			border-left-color: black;
-		}
-		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(3n){
-			border-right-color: black;
+			border-left-width: 2px;
+			border-left-color: #808080;
 		}
 		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n):nth-of-type(-n+9){
-			border-top-color: black;
+			border-top-width: 2px;
+			border-top-color: #808080;
+		}
+		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(3n){
+			border-right-width: 2px;
+			border-right-color: #808080;
 		}
 		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+19):nth-of-type(-n+27),
 		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+46):nth-of-type(-n+54),
 		[data-board-size="9"].sudoku-board .sudoku-board-cell:nth-of-type(n+73):nth-of-type(-n+81){
-			border-bottom-color: black;
+			border-bottom-width: 2px;
+			border-bottom-color: #808080;
 		}
 
 		/* the input for the value of each cell (i.e. 1-9 or empty for standard sudoku*/
