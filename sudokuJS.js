@@ -1,4 +1,4 @@
-// sudokuJS v0.4.2
+// sudokuJS v0.4.3
 // https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
@@ -1647,7 +1647,7 @@
 			}
 		};
 
-		var generateBoard = function(diff){
+		var generateBoard = function(diff, callback){
 			if($boardInputs)
 				clearBoard();
 			difficulty = diff || "medium";
@@ -1676,6 +1676,10 @@
 				updateUIBoard();
 
 			visualEliminationOfCandidates();
+
+			if(typeof callback === 'function'){
+				callback();
+			}
 		};
 
 

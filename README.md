@@ -85,6 +85,8 @@ very hard puzzles generated on every try, so instead it continues over and over
 until is has succeeded. This means loading a very hard board can sometimes
 take up to a few seconds.
 
+`generateBoard` accepts a `callback` function as a second paramater, that gets called when the new board is ready.
+
 #### Candidates
 Candidates are hidden when a board loads. To show/hide candidates:
 
