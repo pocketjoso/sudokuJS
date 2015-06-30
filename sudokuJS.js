@@ -1443,7 +1443,7 @@
 
 					if(indexInHouse(val, houses[i][temp[i]])){
 						//digit already in house - board incorrect with user input
-						log("board incorrect!");
+						// log("board incorrect!");
 						var alreadyExistingCellInHouseWithDigit = houses[i][temp[i]][indexInHouse(val, houses[i][temp[i]])];
 
 						//this happens in candidate mode, if we highlight on ui board before entering value, and user then enters before us.
