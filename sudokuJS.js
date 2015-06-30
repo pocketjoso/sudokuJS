@@ -1,4 +1,4 @@
-// sudokuJS v0.4.3
+// sudokuJS v0.4.4
 // https://github.com/pocketjoso/sudokuJS
 // Author: Jonas Ohlsson
 // License: MIT
@@ -17,10 +17,29 @@
     $.fn.sudokuJS = function(opts) {
 
 		/*
+		 * constants
+		 *-----------*/
+
+		var DIFFICULTY_EASY = "easy";
+		var DIFFICULTY_MEDIUM = "medium";
+		var DIFFICULTY_HARD = "hard";
+		var DIFFICULTY_VERY_HARD = "very hard";
+
+		var SOLVE_MODE_STEP = "step";
+		var SOLVE_MODE_ALL = "all";
+
+		var DIFFICULTIES = [
+			DIFFICULTY_EASY,
+			DIFFICULTY_MEDIUM,
+			DIFFICULTY_HARD,
+			DIFFICULTY_VERY_HARD
+		];
+
+		/*
 		 * variables
 		 *-----------*/
 		opts = opts || {};
-		var solveMode = "step",
+		var solveMode = SOLVE_MODE_STEP,
 				difficulty = "unknown",
 				candidatesShowing = false,
 				editingCandidates = false,
@@ -131,11 +150,11 @@
 		var calcBoardDifficulty = function(usedStrategies){
 			var boardDiff = {};
 			if(usedStrategies.length < 3)
-				boardDiff.level = "easy";
+				boardDiff.level = DIFFICULTY_EASY;
 			else if(usedStrategies.length < 4)
-				boardDiff.level = "medium";
+				boardDiff.level = DIFFICULTY_MEDIUM;
 			else
-				boardDiff.level = "hard";
+				boardDiff.level = DIFFICULTY_HARD;
 
 			var totalScore = 0;
 			for(var i=0; i < strategies.length; i++){
@@ -150,7 +169,7 @@
 
 			if(totalScore > 750)
 			// if(totalScore > 2200)
-				boardDiff.level = "very hard";
+				boardDiff.level = DIFFICULTY_VERY_HARD;
 
 			return boardDiff;
 		};
@@ -377,7 +396,7 @@
 					cellUpdated = true;
 				}
 			}
-			if(cellUpdated && solveMode === "step")
+			if(cellUpdated && solveMode === SOLVE_MODE_STEP)
 				updateUIBoardCell(cell, {mode: "only-candidates"});
 		};
 
@@ -398,7 +417,7 @@
 						c[candidate-1] = null; //NOTE: also deletes them from board variable
 						cellsUpdated.push(cells[i]); //will push same cell multiple times
 
-						if(solveMode==="step"){
+						if(solveMode===SOLVE_MODE_STEP){
 							//highlight candidate as to be removed on board
 							uIBoardHighlightRemoveCandidate(cells[i],candidate);
 						}
@@ -633,7 +652,7 @@
 						//log("fill in single empty cell " + emptyCell.cell+", val: "+val);
 
 						setBoardCell(emptyCell.cell, val[0]); //does not update UI
-						if(solveMode==="step")
+						if(solveMode===SOLVE_MODE_STEP)
 							uIBoardHighlightCandidate(emptyCell.cell, val[0]);
 
 						return [emptyCell.cell];
@@ -724,7 +743,7 @@
 
 							setBoardCell(cellIndex, digit); //does not update UI
 
-							if(solveMode==="step")
+							if(solveMode===SOLVE_MODE_STEP)
 								uIBoardHighlightCandidate(cellIndex, digit);
 
 							onlyUpdatedCandidates = false;
@@ -768,7 +787,7 @@
 
 
 					setBoardCell(i, digit); //does not update UI
-					if(solveMode==="step")
+					if(solveMode===SOLVE_MODE_STEP)
 						uIBoardHighlightCandidate(i, digit);
 
 					onlyUpdatedCandidates = false;
@@ -878,7 +897,7 @@
 							if(cellsUpdated.length > 0){
 								// log("pointing: digit "+digit+", from houseType: "+houseType);
 
-								if(solveMode === "step")
+								if(solveMode === SOLVE_MODE_STEP)
 									highLightCandidatesOnCells([digit], cellsWithCandidate);
 
 
@@ -1019,7 +1038,7 @@
 							//log("nakedCandidates: ");
 							//log(combinedCandidates);
 
-							if(solveMode === "step")
+							if(solveMode === SOLVE_MODE_STEP)
 								highLightCandidatesOnCells(combinedCandidates, cellsWithCandidates);
 
 							onlyUpdatedCandidates = true;
@@ -1184,7 +1203,7 @@
 							//log("hiddenLockedCandidates: ");
 							//log(combinedCandidates);
 
-							if(solveMode === "step")
+							if(solveMode === SOLVE_MODE_STEP)
 								highLightCandidatesOnCells(combinedCandidates, cellsWithCandidates);
 
 							onlyUpdatedCandidates = true;
@@ -1266,7 +1285,7 @@
 
 				return false; //we're done!
 
-			} else if (solveMode === "step"){
+			} else if (solveMode === SOLVE_MODE_STEP){
 				//likely that we're updating twice if !candidatesShowing && !onlyUpdatedCandidates,
 				//but we can't tell if user just toggled candidatesShowing.. so have to do it here (again).
 				if(effectedCells && effectedCells !== -1){
@@ -1293,7 +1312,7 @@
 					if(typeof opts.boardErrorFn === "function" && !generatingMode)
 						opts.boardErrorFn({msg: "no more strategies"});
 
-					if(!gradingMode && !generatingMode && solveMode==="all")
+					if(!gradingMode && !generatingMode && solveMode===SOLVE_MODE_ALL)
 						updateUIBoard(false);
 					return false;
 				}
@@ -1302,13 +1321,13 @@
 				if(typeof opts.boardErrorFn === "function")
 					opts.boardErrorFn({msg: "Board incorrect"});
 
-				if(solveMode === "all") {
+				if(solveMode === SOLVE_MODE_ALL) {
 					updateUIBoard(false); //show user current state of board... how much they need to reset for it to work again.
 				}
 
 				return false; //we can't do no more solving
 
-			} else if(solveMode==="step"){
+			} else if(solveMode===SOLVE_MODE_STEP){
 				// if user clicked solve step, and we're only going to fill in a new value (not messing with candidates) - then show user straight away
 				//callback
 				if(typeof opts.boardUpdatedFn === "function") {
@@ -1396,7 +1415,7 @@
 			}
 			var c = boardCell.candidates;
 			c[candidate-1] = c[candidate-1] === null ? candidate : null;
-			if(solveMode === "step")
+			if(solveMode === SOLVE_MODE_STEP)
 				updateUIBoardCell(cell, {mode: "only-candidates"});
 		};
 
@@ -1499,7 +1518,7 @@
 		  * -----------------------------------------------------------------*/
 		 var analyzeBoard = function(){
 			gradingMode = true;
-			solveMode = "all";
+			solveMode = SOLVE_MODE_ALL;
 			var usedStrategiesClone = JSON.parse(JSON.stringify(usedStrategies));
 			var boardClone = JSON.parse(JSON.stringify(board));
 			var canContinue = true;
@@ -1593,33 +1612,33 @@
 
 		var easyEnough = function(data){
 			// console.log(data.level);
-			if(data.level === "easy")
+			if(data.level === DIFFICULTY_EASY)
 				return true;
-			if(data.level === "medium")
-				return difficulty !== "easy";
-			if(data.level === "hard")
-				return difficulty !== "easy" && difficulty !== "medium";
-			if(data.level === "very hard")
-				return difficulty !== "easy" && difficulty !== "medium" && difficulty !== "hard";
+			if(data.level === DIFFICULTY_MEDIUM)
+				return difficulty !== DIFFICULTY_EASY;
+			if(data.level === DIFFICULTY_HARD)
+				return difficulty !== DIFFICULTY_EASY && difficulty !== DIFFICULTY_MEDIUM;
+			if(data.level === DIFFICULTY_VERY_HARD)
+				return difficulty !== DIFFICULTY_EASY && difficulty !== DIFFICULTY_MEDIUM && difficulty !== DIFFICULTY_HARD;
 		};
 		var hardEnough = function(data) {
-			if(difficulty === "easy")
+			if(difficulty === DIFFICULTY_EASY)
 				return true;
-			if(difficulty === "medium")
-				return data.level !== "easy";
-			if(difficulty === "hard")
-				return data.level !== "easy" && data.level !== "medium";
-			if(difficulty === "very hard")
-				return data.level !== "easy" && data.level !== "medium" && data.level !== "hard";
+			if(difficulty === DIFFICULTY_MEDIUM)
+				return data.level !== DIFFICULTY_EASY;
+			if(difficulty === DIFFICULTY_HARD)
+				return data.level !== DIFFICULTY_EASY && data.level !== DIFFICULTY_MEDIUM;
+			if(difficulty === DIFFICULTY_VERY_HARD)
+				return data.level !== DIFFICULTY_EASY && data.level !== DIFFICULTY_MEDIUM && data.level !== DIFFICULTY_HARD;
 		};
 
 		var digCells = function(){
 			var cells = [];
 			var given = boardSize*boardSize;
 			var minGiven = 17;
-			if(difficulty === "easy"){
+			if(difficulty === DIFFICULTY_EASY){
 				minGiven = 40;
-			} else if(difficulty === "medium"){
+			} else if(difficulty === DIFFICULTY_MEDIUM){
 				minGiven = 30;
 			}
 			for (var i=0; i < boardSize*boardSize; i++){
@@ -1650,9 +1669,9 @@
 		var generateBoard = function(diff, callback){
 			if($boardInputs)
 				clearBoard();
-			difficulty = diff || "medium";
+			difficulty = contains(DIFFICULTIES, diff) ? diff : DIFFICULTY_MEDIUM;
 			generatingMode = true;
-			solveMode = "all";
+			solveMode = SOLVE_MODE_ALL;
 
 			// the board generated will possibly not be hard enough
 			// (if you asked for "hard", you most likely get "medium")
@@ -1671,7 +1690,7 @@
 				else
 					board = boardAnswer;
 			}
-			solveMode = "step";
+			solveMode = SOLVE_MODE_STEP;
 			if($boardInputs)
 				updateUIBoard();
 
@@ -1719,7 +1738,7 @@
 		* PUBLIC methods
 		* ----------------- */
 		var solveAll = function(){
-			solveMode = "all";
+			solveMode = SOLVE_MODE_ALL;
 			var canContinue = true;
 			while(canContinue) {
 				var startStrat = onlyUpdatedCandidates ? 2 : 0;
@@ -1728,7 +1747,7 @@
 		};
 
 		var solveStep = function(){
-			solveMode = "step";
+			solveMode = SOLVE_MODE_STEP;
 			var startStrat = onlyUpdatedCandidates ? 2 : 0;
 			solveFn(startStrat);
 		};

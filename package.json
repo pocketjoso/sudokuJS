@@ -2,7 +2,7 @@
   "name": "SudokuJS",
   "private": "true",
   "description": "JavaScript step-by-step Sudoku solver and board generator",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "homepage": "https://github.com/pocketjoso/sudokuJS",
   "author": {
     "name": "Jonas Ohlsson",
