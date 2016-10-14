@@ -228,10 +228,10 @@
 		 * --------------
 		 *  inits board, variables.
 		 * -----------------------------------------------------------------*/
-		var initBoard = function(){
+		var initBoard = function(opts){
 			var alreadyEnhanced = (board[0] !== null && typeof board[0] === "object");
 			var nullCandidateList = [];
-			boardSize = Math.sqrt(board.length) || 9;
+			boardSize = (!board.length && opts.boardSize) || Math.sqrt(board.length) || 9;
 			$board.attr("data-board-size", boardSize);
 			if(boardSize % 1 !== 0 || Math.sqrt(boardSize) % 1 !== 0) {
 				log("invalid boardSize: "+boardSize);
@@ -1706,7 +1706,7 @@
 		 * init/API/events
 		 *-----------*/
 		if(!opts.board) {
-			initBoard();
+			initBoard(opts);
 			generateBoard(opts.difficulty);
 			buildBoard();
 		} else {
