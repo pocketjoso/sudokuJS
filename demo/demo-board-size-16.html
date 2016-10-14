@@ -59,7 +59,7 @@
 
 	<body>
 	<div class="wrap">
-		<h1>SudokuJS simple demo</h1>
+		<h1>SudokuJS - board size 16 demo</h1>
 		<!--the only required html-->
 		<div id="sudoku" class="sudoku-board">
 		</div>
@@ -70,12 +70,23 @@
 	</div>
 
 	<script>
-		var mySudokuJS = $("#sudoku").sudokuJS({
-			boardSize: 16
-		});
+    function retryForever (fn) {
+      try {
+        return fn()
+      } catch (err) {
+        console.log('retry...')
+        return retryForever(fn)
+      }
+    }
+    function tryGeneratingBoard () {
+      var mySudokuJS = $("#sudoku").sudokuJS({
+  			boardSize: 16
+  		});
 
-		$(".js-solve-step-btn").on("click", mySudokuJS.solveStep);
-		$(".js-solve-all-btn").on("click", mySudokuJS.solveAll);
+  		$(".js-solve-step-btn").on("click", mySudokuJS.solveStep);
+  		$(".js-solve-all-btn").on("click", mySudokuJS.solveAll);
+    }
+    retryForever(tryGeneratingBoard)
 	</script>
 	</body>
 </html>
