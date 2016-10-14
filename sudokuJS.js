@@ -1641,6 +1641,9 @@
 			} else if(difficulty === DIFFICULTY_MEDIUM){
 				minGiven = 30;
 			}
+      if (boardSize < 9) {
+        minGiven = 4
+      }
 			for (var i=0; i < boardSize*boardSize; i++){
 				cells.push(i);
 			}
@@ -1669,7 +1672,14 @@
 		var generateBoard = function(diff, callback){
 			if($boardInputs)
 				clearBoard();
-			difficulty = contains(DIFFICULTIES, diff) ? diff : DIFFICULTY_MEDIUM;
+      if (contains(DIFFICULTIES, diff)) {
+        difficulty = diff
+      }
+      else if (boardSize >= 9) {
+        difficulty = DIFFICULTY_MEDIUM
+      } else {
+        difficulty = DIFFICULTY_EASY
+      }
 			generatingMode = true;
 			solveMode = SOLVE_MODE_ALL;
 
