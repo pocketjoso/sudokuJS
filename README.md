@@ -179,6 +179,7 @@ The solver is board size agnostic, so you can pass in any valid sudoku sized boa
 MIT
 
 ### Changelog
+0.4.5 boardSize option, now working. Demos for board sizes
 0.4.0 Candidate editing mode  
 0.3.0 Board generator, easy - very hard  
 0.2.0 Simple UI and better interface  
