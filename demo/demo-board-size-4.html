@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+		<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+		<link rel="stylesheet" media="all" type="text/css" href="../sudokuJS.css">
+		<style>
+			* {
+				margin:0; padding:0;
+				-moz-box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				box-sizing: border-box;
+			}
+      .sudoku-board-cell input {
+  			background: none;
+  			font-size: 16px;
+      }
+
+			.wrap {
+				padding: 2em 1em;
+				width: 400px;
+				max-width: 100%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			@media(min-width: 30em){
+				.sudoku-board .candidates {
+					font-size: .8em;
+				}
+			}
+
+      [data-board-size="4"].sudoku-board .sudoku-board-cell:nth-of-type(4n+1){
+  			border-left-width: 2px;
+  			border-left-color: #808080;
+  		}
+  		[data-board-size="4"].sudoku-board .sudoku-board-cell:nth-of-type(n):nth-of-type(-n+4){
+  			border-top-width: 2px;
+  			border-top-color: #808080;
+  		}
+  		[data-board-size="4"].sudoku-board .sudoku-board-cell:nth-of-type(2n){
+  			border-right-width: 2px;
+  			border-right-color: #808080;
+  		}
+  		[data-board-size="4"].sudoku-board .sudoku-board-cell:nth-of-type(n+5):nth-of-type(-n+8),
+  		[data-board-size="4"].sudoku-board .sudoku-board-cell:nth-of-type(n+13):nth-of-type(-n+17) {
+  			border-bottom-width: 2px;
+  			border-bottom-color: #808080;
+  		}
+
+		</style>
+
+		<title>SudokuJS - board size 4</title>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+		<script type="text/javascript" src="../sudokuJS.js"></script>
+	</head>
+
+	<body>
+	<div class="wrap">
+		<h1>SudokuJS simple demo</h1>
+		<!--the only required html-->
+		<div id="sudoku" class="sudoku-board">
+		</div>
+
+		<!--solve buttons-->
+		Solve: <button type="button" class="js-solve-step-btn">One Step</button>
+		<button type="button" class="js-solve-all-btn">All</button>
+	</div>
+
+	<script>
+		var mySudokuJS = $("#sudoku").sudokuJS({
+			boardSize: 4
+		});
+
+		$(".js-solve-step-btn").on("click", mySudokuJS.solveStep);
+		$(".js-solve-all-btn").on("click", mySudokuJS.solveAll);
+	</script>
+	</body>
+</html>
