@@ -260,16 +260,16 @@
 		};
 
 
-		/* buildBoard
+		/* renderBoard
 		 * --------------
-		 *  dynamically builds board, based on board variable
+		 *  dynamically renders the board on the screen (into the DOM), based on board variable
 		 * -----------------------------------------------------------------*/
-		var buildBoard = function(){
-			//log("buildBoard");
+		var renderBoard = function(){
+			//log("renderBoard");
 			//log(board);
 			var htmlString = "";
 			for(var i=0; i < boardSize*boardSize; i++){
-				htmlString += buildBoardCell(board[i], i);
+				htmlString += renderBoardCell(board[i], i);
 
 				if((i+1) % boardSize === 0) {
 					htmlString += "<br>";
@@ -283,9 +283,9 @@
 			$boardInputCandidates = $board.find(".candidates");
 		};
 
-		/* buildBoardCell
+		/* renderBoardCell
 		 * -----------------------------------------------------------------*/
-		var buildBoardCell = function(boardCell, id){
+		var renderBoardCell = function(boardCell, id){
 			var val = (boardCell.val === null) ? "" : boardCell.val;
 			var candidates = boardCell.candidates || [];
 			var candidatesString = buildCandidatesString(candidates);
@@ -1669,13 +1669,14 @@
 			}
 		};
 
+    // generates board puzzle, i.e. the answers for this round
+    // requires that a board for boardSize has already been initiated
 		var generateBoard = function(diff, callback){
 			if($boardInputs)
 				clearBoard();
       if (contains(DIFFICULTIES, diff)) {
         difficulty = diff
-      }
-      else if (boardSize >= 9) {
+      } else if (boardSize >= 9) {
         difficulty = DIFFICULTY_MEDIUM
       } else {
         difficulty = DIFFICULTY_EASY
@@ -1717,12 +1718,12 @@
 		 *-----------*/
 		if(!opts.board) {
 			initBoard(opts);
-			generateBoard(opts.difficulty);
-			buildBoard();
+			generateBoard(opts);
+			renderBoard();
 		} else {
 			board = opts.board;
 			initBoard();
-			buildBoard();
+			renderBoard();
 			visualEliminationOfCandidates();
 		}
 
