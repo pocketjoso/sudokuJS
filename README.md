@@ -1,7 +1,7 @@
 #SudokuJS
 ##JavaScript Sudoku solver
 
-Live demo on: http://jonassebastianohlsson.com/sudoku/
+Live demo on: https://jonassebastianohlsson.com/sudoku/
 
 SudokuJS has a step by step solver that implements basic strategies,
 enough to solve (non evil) newspaper sudoku puzzles. The solver is built
