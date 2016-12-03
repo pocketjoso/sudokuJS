@@ -1778,6 +1778,7 @@
 		};
 
 		var setBoard = function(newBoard){
+      clearBoard(); // if any pre-existing
 			board = newBoard;
 			initBoard();
 			visualEliminationOfCandidates();
