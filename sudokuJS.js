@@ -86,7 +86,7 @@
 		*/
 			board = [],
 			boardSize,
-			boardNumbers = [], //1-9 by default, generated
+			boardNumbers, // array of 1-9 by default, generated in initBoard
 
 		//indexes of cells in each house - generated on the fly based on boardSize
 			houses = [
@@ -189,6 +189,15 @@
 		/* generateHouseIndexList
 		 * -----------------------------------------------------------------*/
 		var generateHouseIndexList = function(){
+        // reset houses
+        houses = [
+				//hor. rows
+				[],
+				//vert. rows
+				[],
+				//boxes
+				[]
+			]
 			var boxSideSize = Math.sqrt(boardSize);
 
 			for(var i=0; i < boardSize; i++){
@@ -231,6 +240,7 @@
 		var initBoard = function(opts){
 			var alreadyEnhanced = (board[0] !== null && typeof board[0] === "object");
 			var nullCandidateList = [];
+      boardNumbers = [];
 			boardSize = (!board.length && opts.boardSize) || Math.sqrt(board.length) || 9;
 			$board.attr("data-board-size", boardSize);
 			if(boardSize % 1 !== 0 || Math.sqrt(boardSize) % 1 !== 0) {
